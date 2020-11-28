@@ -3,8 +3,9 @@
 
     foreach($countryBorders['features'] as $feature) {
         $name = $feature['properties']['name'];
+        $countrycode = $feature['properties']['iso_a2'];
 
-        echo "<option val=" . "'" . $name . "'>" . $name . "</option>";
+        echo "<option value=" . "'" . $countrycode . "'>" . $name . "</option>";
     }
     //header('Content-Type: application/json; charset=UTF-8');
 

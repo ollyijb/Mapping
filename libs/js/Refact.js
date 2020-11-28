@@ -48,6 +48,27 @@ const firstAPICall = (coordsObj) => {
     });
 };
 
+const getSelectLocationData = (code) => {
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: "libs/php/selectData.php",
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                countryCode: code
+            },
+            success: function (result) {
+                console.log(result);
+                resolve(result);
+            },
+            error: (err) => {
+                console.log(err);
+                reject(err);
+            }
+        });
+    });
+};
+
 // Sets borders retrieved from API call & Sets new Optimum View
 const setBorders = (borderObj) => {
     let borders = borderObj.Borders;
@@ -306,7 +327,7 @@ const generateCitiesPopUp = (city) => {
     <p>Score: ${city.score}</p>
     <p>Population: ${city.population}</p>
     <a href="${city.url}" target="_blank">Click to Learn More about ${city.name}</a>
-    <img src="${city.url}" alt="${city.alt} image">`;
+    <img src="${city.image}" alt="${city.alt} image">`;
     return cityTemplate;
 };
 
@@ -555,6 +576,21 @@ const fillCountryWrapper = (result) => {
 $('#select').load('libs/php/borders.php', function () {
 });
 
+$('#select').change(function () {
+
+    getSelectLocationData($(this).val()).then((result) => {
+
+        setBorders(result);
+        dropCitiesWrapperFunction(result);
+        dropParksWrapper(result);
+        fillCountryWrapper(result);
+        dropRestaurantsWrapper(result);
+        dropAttractionsWrapper(result);
+        dropHotelsWrapper(result);
+        dataStore.unshift(result);
+    });
+});
+
 // Adding and removing clouds layer to map on show clouds button
 $('#showClouds').click(function (event) {
     event.preventDefault();
@@ -590,6 +626,26 @@ $('#showCapital').click(function () {
     console.log(dataStore);
 });
 
+$('#weatherForecast').click(function () {
+    let forecasts = dataStore[0].Forecast;
+    $('#weatherList').empty();
+    $.each(forecasts, function (index, value) {
+        $('#weatherList').append(`
+        <li>
+            <h4>${new Date(value.dt * 1000).toDateString()}</h4>
+            <p><img src="http://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png" alt="${value.weather[0].description}">${value.weather[0].description}</p>
+            <p>Humidity: ${value.humidity}</p>
+            <p>UVI: ${value.uvi}</p>
+            <h5>Temperatures</h5>
+            <p>Max: ${value.temp.max} Celsius | Min: ${value.temp.min} Celsius</p>
+            <p>Feels like: ${value.feels_like.day} Celsius</p>
+        </li>`);
+    });
+    $('#weatherInfo').toggle();
+});
+
+
+
 /******************** Not Yet Finished ***************************/
 // Toggling the display country info
 $('#showInfo').click(function () {
@@ -606,7 +662,7 @@ if (!navigator.geolocation) {
     alert(`Geolocation denied or not supported so rendering default map`);
     firstAPICall(defaultPosition.coords).then((result) => {
         setBorders(result);
-        dataStore.push(result);
+        dataStore.unshift(result);
         dropCitiesWrapperFunction(result);
         fillCountryWrapper(result);
     }).catch((err) => {
@@ -624,7 +680,7 @@ if (!navigator.geolocation) {
         };
 
         firstAPICall(useObj).then((result) => {
-            console.log(result);
+            console.log(result.capitalCoords);
             setBorders(result);
             dropCitiesWrapperFunction(result);
             dropParksWrapper(result);
@@ -632,7 +688,7 @@ if (!navigator.geolocation) {
             dropRestaurantsWrapper(result);
             dropAttractionsWrapper(result);
             dropHotelsWrapper(result);
-            dataStore.push(result);
+            dataStore.unshift(result);
         });
 
     }).catch((err) => {
