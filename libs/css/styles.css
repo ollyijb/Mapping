@@ -1,0 +1,29 @@
+#preloader {
+    position: fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background-color:rgb(175, 53, 53); /* change if the mask should have another color then white */
+    z-index:999; /* makes sure it stays on top */
+    /*display: none;*/
+}
+
+#status {
+    width:50vw;
+    height:50vh;
+    position:absolute;
+    left:50%; /* centers the loading animation horizontally one the screen */
+    top:50%; /* centers the loading animation vertically one the screen */
+    background-image: url('../Resources/loader.gif');
+    z-index:9999; /* path to your loading animation */
+    background-repeat:no-repeat;
+    margin: -10%; /* is width and height divided by two */
+    /*display: none;*/
+}
+
+#mapid { height: 100vh; } 
+
+#countryInfo {display: none;}
+
+#WeatherInfo {display: none;}
