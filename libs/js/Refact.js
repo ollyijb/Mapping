@@ -38,6 +38,8 @@ const firstAPICall = (coordsObj) => {
             },
             success: function (result) {
                 console.log(result);
+                $('#preloader').fadeOut(200);
+                $('#status').fadeOut(200);
                 resolve(result);
             },
             error: (err) => {
@@ -50,6 +52,8 @@ const firstAPICall = (coordsObj) => {
 
 const getSelectLocationData = (code) => {
     return new Promise(function (resolve, reject) {
+        $('#preloader').show();
+        $('#status').show();
         $.ajax({
             url: "libs/php/selectData.php",
             type: "POST",
@@ -60,6 +64,8 @@ const getSelectLocationData = (code) => {
             success: function (result) {
                 console.log(result);
                 resolve(result);
+                $('#preloader').fadeOut(200);
+                $('#status').fadeOut(200);
             },
             error: (err) => {
                 console.log(err);
@@ -341,9 +347,9 @@ const cityValidator = (city) => {
         },
         snippet: city.snippet,
         score: city.score.toFixed(2),
-        population: city.properties[0].value,
+        population: city.properties[0],
         url: city.attribution[1].url,
-        image: city.images[0].sizes.thumbnail.url,
+        image: city.images[0],
         alt: city.name
     };
     if (!cityObj.snippet) {
@@ -357,10 +363,14 @@ const cityValidator = (city) => {
     }
     if (!cityObj.population) {
         cityObj.population = "No Population Data Available";
+    } else {
+        cityObj.population = city.properties[0].value;
     }
     if (!cityObj.image) {
         cityObj.image = '/Resouces/image-not-found.png';
         cityObj.alt = "No Image Found";
+    } else {
+        cityObj.image = city.images[0].sizes.thumbnail.url;
     }
     return cityObj;
 }
@@ -523,46 +533,66 @@ const generateWeatherForecast = (weather) => {
 /********************** Wrapper Functions ************************/
 const dropRestaurantsWrapper = (result) => {
     let restaurantlist = result.CapitalRestaurants;
-    for (let i = 0; i < restaurantlist.length; i++) {
-        let restaurant = restaurantValidator(restaurantlist[i]);
-        let restuarantMarker = generateMarker(restaurant.coords, restaurantIcon);
-        restuarantMarker.bindPopup(generateRestaurantPopUp(restaurant), restaurantOptions);
+    if (!restaurantlist) {
+        return;
+    } else {
+        for (let i = 0; i < restaurantlist.length; i++) {
+            let restaurant = restaurantValidator(restaurantlist[i]);
+            let restuarantMarker = generateMarker(restaurant.coords, restaurantIcon);
+            restuarantMarker.bindPopup(generateRestaurantPopUp(restaurant), restaurantOptions);
+        }
     }
 };
 
 const dropCitiesWrapperFunction = (result) => {
     let Cities = result.Cities;
-    for (let i = 0; i < Cities.length; i++) {
-        let city = cityValidator(Cities[i]);
-        let cityMarker = generateMarker(city.coords, cityIcon);
-        cityMarker.bindPopup(generateCitiesPopUp(city), cityOptions);
+    if (!Cities) {
+        return;
+    } else {
+        for (let i = 0; i < Cities.length; i++) {
+            let city = cityValidator(Cities[i]);
+            let cityMarker = generateMarker(city.coords, cityIcon);
+            cityMarker.bindPopup(generateCitiesPopUp(city), cityOptions);
+        }
     }
 };
 
 const dropParksWrapper = (result) => {
     let parks = result.NationalParks;
-    for (let i = 0; i < parks.length; i++) {
-        let park = parkValidator(parks[i]);
-        let parkMarker = generateMarker(park.coords, parkIcon);
-        parkMarker.bindPopup(generateParkPopUp(park), parkOptions);
+    if (!parks) {
+        return;
+    } else {
+        for (let i = 0; i < parks.length; i++) {
+            let park = parkValidator(parks[i]);
+            let parkMarker = generateMarker(park.coords, parkIcon);
+            parkMarker.bindPopup(generateParkPopUp(park), parkOptions);
+        }
     }
 };
 
 const dropAttractionsWrapper = (result) => {
     let attractions = result.CapitalTopAttractions;
-    for (let i = 0; i < attractions.length; i++) {
-        let attraction = attractionValidator(attractions[i]);
-        let attractionMarker = generateMarker(attraction.coords, attractionIcon);
-        attractionMarker.bindPopup(generateAttractionPopUp(attraction), attractionsOptions);
+    if (!attractions) {
+        return;
+    } else {
+        for (let i = 0; i < attractions.length; i++) {
+            let attraction = attractionValidator(attractions[i]);
+            let attractionMarker = generateMarker(attraction.coords, attractionIcon);
+            attractionMarker.bindPopup(generateAttractionPopUp(attraction), attractionsOptions);
+        }
     }
 };
 
 const dropHotelsWrapper = (result) => {
     let hotels = result.CapitalHotels;
-    for (let i = 0; i < hotels.length; i++) {
-        let hotel = attractionValidator(hotels[i]);
-        let hotelMarker = generateMarker(hotel.coords, hotelIcon);
-        hotelMarker.bindPopup(generateAttractionPopUp(hotel), hotelOptions);
+    if (!hotels) {
+        return;
+    } else {
+        for (let i = 0; i < hotels.length; i++) {
+            let hotel = attractionValidator(hotels[i]);
+            let hotelMarker = generateMarker(hotel.coords, hotelIcon);
+            hotelMarker.bindPopup(generateAttractionPopUp(hotel), hotelOptions);
+        }
     }
 }
 

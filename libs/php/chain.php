@@ -102,6 +102,12 @@
         $country = $countryName;
     }
 
+    if (stripos($city, ' ')) {
+        $cityName = str_replace(' ', '_', $city);
+    } else {
+        $cityName = $city;
+    }
+
     $account = 'C50AK397';
     $token = 'j3z2565mhit6vlidfk6skusr4kolptxn';
     $url = 'https://www.triposo.com/api/20201111/location.json?part_of=' . $country . '&tag_labels=city&count=10&fields=all&order_by=-score&account=' . $account . '&token=' . $token;
@@ -129,7 +135,7 @@
     $output['NationalParks'] = $decode['results'];
 
     // Best Places in Capital
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $city . '&tag_labels=topattractions&count=10&account=' . $account. '&token=' . $token;
+    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityName . '&tag_labels=topattractions&count=10&account=' . $account. '&token=' . $token;
 
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -141,7 +147,7 @@
     $output['CapitalTopAttractions'] = $decode['results'];
 
     // Top Restaurants in Capital
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $city . '&tag_labels=cuisine&count=10&account=' . $account. '&token=' . $token;
+    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityName . '&tag_labels=cuisine&count=10&account=' . $account. '&token=' . $token;
 
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -153,7 +159,7 @@
     $output['CapitalRestaurants'] = $decode['results'];
 
     // Top Hotels in Capital
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $city . '&tag_labels=hotels&count=10&account=' . $account. '&token=' . $token;
+    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityName . '&tag_labels=hotels&count=10&account=' . $account. '&token=' . $token;
 
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -165,7 +171,7 @@
     $output['CapitalHotels'] = $decode['results'];
 
     // Top Tours in Capital
-    $url = 'https://www.triposo.com/api/20201111/tour.json?location_ids=' . $city . '&count=10&account=' . $account . '&token=' . $token;
+    $url = 'https://www.triposo.com/api/20201111/tour.json?location_ids=' . $cityName . '&count=10&account=' . $account . '&token=' . $token;
 
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
