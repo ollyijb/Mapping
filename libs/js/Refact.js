@@ -693,9 +693,13 @@ if (!navigator.geolocation) {
     alert(`Geolocation denied or not supported so rendering default map`);
     firstAPICall(defaultPosition.coords).then((result) => {
         setBorders(result);
-        dataStore.unshift(result);
         dropCitiesWrapperFunction(result);
+        dropParksWrapper(result);
         fillCountryWrapper(result);
+        dropRestaurantsWrapper(result);
+        dropAttractionsWrapper(result);
+        dropHotelsWrapper(result);
+        dataStore.unshift(result);
     }).catch((err) => {
         console.error(err.message);
     });
@@ -727,6 +731,13 @@ if (!navigator.geolocation) {
         alert(`Geolocation denied or not supported so rendering default map`);
         firstAPICall(defaultPosition.coords).then((result) => {
             setBorders(result);
+            dropCitiesWrapperFunction(result);
+            dropParksWrapper(result);
+            fillCountryWrapper(result);
+            dropRestaurantsWrapper(result);
+            dropAttractionsWrapper(result);
+            dropHotelsWrapper(result);
+            dataStore.unshift(result);
         });
     });
 }
