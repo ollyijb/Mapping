@@ -90,6 +90,10 @@
         $cityName = $city;
     }
 
+    if ($city == 'Vienna') {
+        $cityName = 'wv__Vienna';
+    }
+
     $account = 'C50AK397';
     $token = 'j3z2565mhit6vlidfk6skusr4kolptxn';
     $url = 'https://www.triposo.com/api/20201111/location.json?part_of=' . $country . '&tag_labels=city&count=10&fields=all&order_by=-score&account=' . $account . '&token=' . $token;
