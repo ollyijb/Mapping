@@ -66,6 +66,7 @@ const getSelectLocationData = (code) => {
                 resolve(result);
                 $('#preloader').fadeOut(200);
                 $('#status').fadeOut(200);
+                $('.navbar-collapse').collapse('hide');
             },
             error: (err) => {
                 console.log(err);
