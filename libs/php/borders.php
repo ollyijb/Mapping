@@ -1,7 +1,8 @@
 <?php
-    $countryBorders = json_decode(file_get_contents("../Resources/countryBorders.geo.json"), true);
+    $countryBorders = json_decode(file_get_contents("../Resources/countryBorders.geo.json"));
     
-    $features = $countryBorders['features'];
+    print_r($countryBorders);
+    $features = $countryBorders->features;
     
     function cmp($a, $b) {
         return strcmp($a->name, $b->name);
@@ -10,7 +11,7 @@
     $my_arr = array();
 
     for ($i = 0; $i < count($features); $i++) {
-        array_push($my_arr, (object)$features[$i]['properties']);
+        array_push($my_arr, $features[$i]->properties);
     }
 
     usort($my_arr, 'cmp');

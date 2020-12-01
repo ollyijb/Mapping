@@ -7,6 +7,63 @@ let useObj;
 // Stores data received from API Routines
 let dataStore = [];
 
+/*----------------------------- Run ----------------------------*/
+$(document).ready(function () {
+    if (!navigator.geolocation) {
+
+        /*********************** Set Default Map! ***************/
+        alert(`Geolocation denied or not supported so rendering default map`);
+        firstAPICall(defaultPosition.coords).then((result) => {
+            setBorders(result);
+            dropCitiesWrapperFunction(result);
+            dropParksWrapper(result);
+            fillCountryWrapper(result);
+            dropRestaurantsWrapper(result);
+            dropAttractionsWrapper(result);
+            dropHotelsWrapper(result);
+            dataStore.unshift(result);
+        }).catch((err) => {
+            console.error(err.message);
+        });
+
+    } else {
+        getUserLocation().then((position) => {
+
+            useUsersLocation(position);
+
+            useObj = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            };
+
+            firstAPICall(useObj).then((result) => {
+                console.log(result.capitalCoords);
+                setBorders(result);
+                dropCitiesWrapperFunction(result);
+                dropParksWrapper(result);
+                fillCountryWrapper(result);
+                dropRestaurantsWrapper(result);
+                dropAttractionsWrapper(result);
+                dropHotelsWrapper(result);
+                dataStore.unshift(result);
+            });
+
+        }).catch((err) => {
+            //console.error(`Error: ${err.message}`);
+            alert(`Geolocation denied or not supported so rendering default map`);
+            firstAPICall(defaultPosition.coords).then((result) => {
+                setBorders(result);
+                dropCitiesWrapperFunction(result);
+                dropParksWrapper(result);
+                fillCountryWrapper(result);
+                dropRestaurantsWrapper(result);
+                dropAttractionsWrapper(result);
+                dropHotelsWrapper(result);
+                dataStore.unshift(result);
+            });
+        });
+    }
+});
 /*------------------------------------- Location Functions -------------------------*/
 
 // Gets User Location
@@ -707,59 +764,4 @@ $('#showInfo').click(function () {
     $('#countryInfo').toggle();
 });
 
-/*----------------------------- Run ----------------------------*/
 
-if (!navigator.geolocation) {
-
-    /*********************** Set Default Map! ***************/
-    alert(`Geolocation denied or not supported so rendering default map`);
-    firstAPICall(defaultPosition.coords).then((result) => {
-        setBorders(result);
-        dropCitiesWrapperFunction(result);
-        dropParksWrapper(result);
-        fillCountryWrapper(result);
-        dropRestaurantsWrapper(result);
-        dropAttractionsWrapper(result);
-        dropHotelsWrapper(result);
-        dataStore.unshift(result);
-    }).catch((err) => {
-        console.error(err.message);
-    });
-
-} else {
-    getUserLocation().then((position) => {
-
-        useUsersLocation(position);
-
-        useObj = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-        };
-
-        firstAPICall(useObj).then((result) => {
-            console.log(result.capitalCoords);
-            setBorders(result);
-            dropCitiesWrapperFunction(result);
-            dropParksWrapper(result);
-            fillCountryWrapper(result);
-            dropRestaurantsWrapper(result);
-            dropAttractionsWrapper(result);
-            dropHotelsWrapper(result);
-            dataStore.unshift(result);
-        });
-
-    }).catch((err) => {
-        //console.error(`Error: ${err.message}`);
-        alert(`Geolocation denied or not supported so rendering default map`);
-        firstAPICall(defaultPosition.coords).then((result) => {
-            setBorders(result);
-            dropCitiesWrapperFunction(result);
-            dropParksWrapper(result);
-            fillCountryWrapper(result);
-            dropRestaurantsWrapper(result);
-            dropAttractionsWrapper(result);
-            dropHotelsWrapper(result);
-            dataStore.unshift(result);
-        });
-    });
-}
