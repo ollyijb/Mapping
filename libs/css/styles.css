@@ -27,3 +27,5 @@
 #countryInfo {display: none;}
 
 #weatherInfo {display: none;}
+
+.leaflet-popup {max-width: auto;}

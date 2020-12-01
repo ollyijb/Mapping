@@ -1,10 +1,13 @@
 // Default User Position object
 const defaultPosition = { coords: { latitude: 51.5, longitude: -0.10 } };
-let useLat;
-let useLon;
+
+// Used to Store User Location Data
 let useObj;
 
-/*------------------------------------- Trial Functions -------------------------*/
+// Stores data received from API Routines
+let dataStore = [];
+
+/*------------------------------------- Location Functions -------------------------*/
 
 // Gets User Location
 const getUserLocation = (options) => {
@@ -50,6 +53,7 @@ const firstAPICall = (coordsObj) => {
     });
 };
 
+// AJAX Routine for users selected country in Select Box
 const getSelectLocationData = (code) => {
     return new Promise(function (resolve, reject) {
         $('#preloader').show();
@@ -83,10 +87,7 @@ const setBorders = (borderObj) => {
     map.fitBounds(border.getBounds());
 };
 
-//const getInfo;
-
-//const useDefaultLocation;
-
+// A helper function for adding and removing layers such as weather layers to the map
 const displayMapLayer = (layer) => {
     if (map.hasLayer(layer)) {
         $(this).removeClass('selected');
@@ -184,6 +185,7 @@ let attractionIcon = L.AwesomeMarkers.icon({
     prefix: 'ion'
 });
 
+// Setting Tour Icon
 let tourIcon = L.AwesomeMarkers.icon({
     icon: 'eye',
     iconColor: 'black',
@@ -191,6 +193,7 @@ let tourIcon = L.AwesomeMarkers.icon({
     prefix: 'ion'
 });
 
+// Setting Hotel Icon
 let hotelIcon = L.AwesomeMarkers.icon({
     icon: 'home',
     iconColor: 'black',
@@ -198,31 +201,37 @@ let hotelIcon = L.AwesomeMarkers.icon({
     prefix: 'ion'
 });
 
+// Setting Popup options for City
 let cityOptions = {
     keepInView: true,
     className: 'CitiesPopUp'
 };
 
+// Setting Popup options for Park
 let parkOptions = {
     keepInView: true,
     className: 'ParksPopUp'
 };
 
+// Setting Popup options for Restaurant
 let restaurantOptions = {
     keepInView: true,
     className: 'restaurantsPopUp'
 };
 
+// Setting Popup options for Attraction
 let attractionsOptions = {
     keepInView: true,
     className: 'attractionsPopUp'
 };
 
+// Setting Popup options for Hotel
 let hotelOptions = {
     keepInView: true,
     className: 'hotelsPopUp'
 };
 
+// Setting Popup options for Tour
 let tourOptions = {
     keepInView: true,
     className: 'toursPopUp'
@@ -376,7 +385,7 @@ const cityValidator = (city) => {
     return cityObj;
 }
 
-
+// Validating Country Information
 const countryValidator = (result) => {
     let country = {
         name: result.GeoInfo.countryName,
@@ -515,6 +524,7 @@ const attractionValidator = (attraction) => {
     return attractionObj;
 };
 
+// Generating Attraction Popup
 const generateAttractionPopUp = (attraction) => {
     let attractionTemplate = `
     <h4>${attraction.name}</h4>
@@ -526,12 +536,9 @@ const generateAttractionPopUp = (attraction) => {
     return attractionTemplate;
 };
 
-// Generating Daily Weather Forecasts
-const generateWeatherForecast = (weather) => {
+/*------------------------------------ Wrapper Functions ------------------------------------*/
 
-};
-
-/********************** Wrapper Functions ************************/
+// Adds Restaurants to Map
 const dropRestaurantsWrapper = (result) => {
     let restaurantlist = result.CapitalRestaurants;
     if (!restaurantlist) {
@@ -545,6 +552,7 @@ const dropRestaurantsWrapper = (result) => {
     }
 };
 
+// Adds Cities to Map
 const dropCitiesWrapperFunction = (result) => {
     let Cities = result.Cities;
     if (!Cities) {
@@ -558,6 +566,7 @@ const dropCitiesWrapperFunction = (result) => {
     }
 };
 
+// Adds Parks to Map
 const dropParksWrapper = (result) => {
     let parks = result.NationalParks;
     if (!parks) {
@@ -571,6 +580,7 @@ const dropParksWrapper = (result) => {
     }
 };
 
+// Adds Attractions to Map
 const dropAttractionsWrapper = (result) => {
     let attractions = result.CapitalTopAttractions;
     if (!attractions) {
@@ -584,6 +594,7 @@ const dropAttractionsWrapper = (result) => {
     }
 };
 
+// Adds Hotels to Map
 const dropHotelsWrapper = (result) => {
     let hotels = result.CapitalHotels;
     if (!hotels) {
@@ -597,16 +608,18 @@ const dropHotelsWrapper = (result) => {
     }
 }
 
+// Fills Country Info 
 const fillCountryWrapper = (result) => {
     $('#countryInfo').html(countryTemplate(countryValidator(result)));
 };
 
-/*----------------------------- jQuery ----------------------------*/
+/*----------------------------- Events ----------------------------*/
 
 // Calling php to call json to populate select dropdown menu with countries
 $('#select').load('libs/php/borders.php', function () {
 });
 
+// User Selects Country and Generates a new map with new markers
 $('#select').change(function () {
 
     getSelectLocationData($(this).val()).then((result) => {
@@ -625,38 +638,52 @@ $('#select').change(function () {
 // Adding and removing clouds layer to map on show clouds button
 $('#showClouds').click(function (event) {
     event.preventDefault();
+    $('.navbar-collapse').collapse('hide');
     displayMapLayer(clouds);
 });
 
 // Adding and removing Precipitation layer to map on show clouds button
 $('#showPercipitation').click(function (event) {
     event.preventDefault();
+    $('.navbar-collapse').collapse('hide');
     displayMapLayer(precipitation);
 });
 
 // Adding and removing Pressure layer to map on show clouds button
 $('#showPressure').click(function (event) {
     event.preventDefault();
+    $('.navbar-collapse').collapse('hide');
     displayMapLayer(pressure);
 });
 
 // Adding and removing WindSpeed layer to map on show clouds button
 $('#showWind').click(function (event) {
     event.preventDefault();
+    $('.navbar-collapse').collapse('hide');
     displayMapLayer(wind);
 });
 
 // Adding and removing Temperature layer to map on show clouds button
 $('#showTemperture').click(function (event) {
     event.preventDefault();
+    $('.navbar-collapse').collapse('hide');
     displayMapLayer(temp);
 });
 
+// Adding functionality to the show capital button
 $('#showCapital').click(function () {
-    map.setView([dataStore[0].capitalCoords.lat, dataStore[0].capitalCoords.lon], 11)
-    console.log(dataStore);
+    if ($('#showCapital').html() == 'Show Capital') {
+        map.setView([dataStore[0].capitalCoords.lat, dataStore[0].capitalCoords.lon], 11);
+        $('.navbar-collapse').collapse('hide');
+        $('#showCapital').html('Back to Country');
+    } else {
+        setBorders(dataStore[0]);
+        $('#showCapital').html('Show Capital');
+        $('.navbar-collapse').collapse('hide');
+    }
 });
 
+// Fills and shows Week of Weather Forecasts
 $('#weatherForecast').click(function () {
     let forecasts = dataStore[0].Forecast;
     $('#weatherList').empty();
@@ -675,17 +702,12 @@ $('#weatherForecast').click(function () {
     $('#weatherInfo').toggle();
 });
 
-
-
-/******************** Not Yet Finished ***************************/
 // Toggling the display country info
 $('#showInfo').click(function () {
     $('#countryInfo').toggle();
 });
 
 /*----------------------------- Run ----------------------------*/
-
-let dataStore = [];
 
 if (!navigator.geolocation) {
 
@@ -741,6 +763,3 @@ if (!navigator.geolocation) {
         });
     });
 }
-
-/*--------------------- Experimenting ------------------------------*/
-
