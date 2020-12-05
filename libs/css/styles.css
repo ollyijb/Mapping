@@ -22,6 +22,9 @@
     /*display: none;*/
 }
 
-#mapid { height: 100vh; } 
+#mapid { 
+    height: 93vh; 
+} 
+
 
 .leaflet-popup {max-width: auto;}
