@@ -1,7 +1,6 @@
 <?php
     $countryBorders = json_decode(file_get_contents("../Resources/countryBorders.geo.json"));
     
-    print_r($countryBorders);
     $features = $countryBorders->features;
     
     function cmp($a, $b) {

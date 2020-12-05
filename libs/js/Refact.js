@@ -37,7 +37,6 @@ $(document).ready(function () {
             };
 
             firstAPICall(useObj).then((result) => {
-                //console.log(result.capitalCoords);
                 setBorders(result);
                 dropCitiesWrapperFunction(result);
                 dropParksWrapper(result);
@@ -49,7 +48,6 @@ $(document).ready(function () {
             });
 
         }).catch((err) => {
-            //console.error(`Error: ${err.message}`);
             alert(`Geolocation denied or not supported so rendering default map`);
             firstAPICall(defaultPosition.coords).then((result) => {
                 setBorders(result);
@@ -415,7 +413,7 @@ const cityValidator = (city) => {
         snippet: city.snippet,
         score: city.score.toFixed(2),
         population: city.properties[0],
-        url: city.attribution[1].url,
+        url: city.attribution[1],
         image: city.images[0],
         alt: city.name
     };
@@ -426,7 +424,12 @@ const cityValidator = (city) => {
         cityObj.score = 'N/A';
     }
     if (!cityObj.url) {
-        cityObj.url = 'No Website Found';
+        cityObj.url = city.attribution[0].url;
+    } else {
+        cityObj.url = city.attribution[1].url;
+    }
+    if (!cityObj.url) {
+        cityObj.url = "No Link Found";
     }
     if (!cityObj.population) {
         cityObj.population = "No Population Data Available";
@@ -450,9 +453,7 @@ const countryValidator = (result) => {
         population: result.GeoInfo.population,
         capital: result.GeoInfo.capital,
         callingCode: result.GeoNames.annotations.callingcode,
-        currencyCode: result.GeoNames.annotations.currency.iso_code,
-        currencyName: result.GeoNames.annotations.currency.name,
-        currencySybol: result.GeoNames.annotations.currency.symbol,
+        currencyInfo: result.GeoNames.annotations.currency,
         drivingSide: result.GeoNames.annotations.roadinfo.drive_on,
         drivingUnits: result.GeoNames.annotations.roadinfo.speed_in,
         weatherIcon: result.CurrentWeather.weather[0].icon,
@@ -465,17 +466,30 @@ const countryValidator = (result) => {
     if (!country.population) {
         country.population = "No population Data found";
     }
+    if (!country.currencyInfo) {
+        country.currencyInfo = {
+            currencyCode: "Not found",
+            currencyName: "Not found",
+            currencySymbol: "Not found"
+        };
+    } else {
+        country.currencyInfo = {
+            currencyCode: result.GeoNames.annotations.currency.iso_code,
+            currencyName: result.GeoNames.annotations.currency.name,
+            currencySybol: result.GeoNames.annotations.currency.symbol
+        };
+    }
     if (!country.callingCode) {
         country.callingCode = "Not found";
     }
-    if (!country.currencyCode) {
-        country.currencyCode = "Not found";
+    if (!country.currencyInfo.currencyCode) {
+        country.currencyInfo.currencyCode = "Not found";
     }
-    if (!country.currencyName) {
-        country.currencyCode = "Not found";
+    if (!country.currencyInfo.currencyName) {
+        country.currencyInfo.currencyCode = "Not found";
     }
-    if (!country.currencySybol) {
-        country.currencySybol = "Not found";
+    if (!country.currencyInfo.currencySybol) {
+        country.currencyInfo.currencySybol = "Not found";
     }
     if (!country.drivingSide) {
         country.drivingSide = "Not found";
@@ -518,9 +532,9 @@ const countryTemplate = (country) => {
     <p><b>Capital: </b>${country.capital}</p>
     <p><b>Calling Code: </b>${country.callingCode}</p>
     <h5>Currency Info</h5>
-    <p><b>Code: </b>${country.currencyCode}</p>
-    <p><b>Name: </b>${country.currencyName}</p>
-    <p><b>Symbol: </b>${country.currencySybol}</p>
+    <p><b>Code: </b>${country.currencyInfo.currencyCode}</p>
+    <p><b>Name: </b>${country.currencyInfo.currencyName}</p>
+    <p><b>Symbol: </b>${country.currencyInfo.currencySybol}</p>
     <h5>Driving Info</h5>
     <p><b>Side of Road: </b>${country.drivingSide}</p>
     <p><b>Speed in: </b>${country.drivingUnits}</p>
@@ -667,7 +681,8 @@ const dropHotelsWrapper = (result) => {
 
 // Fills Country Info 
 const fillCountryWrapper = (result) => {
-    $('#countryInfo').html(countryTemplate(countryValidator(result)));
+    //$('#countryInfo').html(countryTemplate(countryValidator(result)));
+    $('#countryInfoContent').html(countryTemplate(countryValidator(result)));
 };
 
 /*----------------------------- Events ----------------------------*/
@@ -756,12 +771,7 @@ $('#weatherForecast').click(function () {
             <p>Feels like: ${value.feels_like.day} Celsius</p>
         </li>`);
     });
-    $('#weatherInfo').toggle();
 });
 
-// Toggling the display country info
-$('#showInfo').click(function () {
-    $('#countryInfo').toggle();
-});
 
 

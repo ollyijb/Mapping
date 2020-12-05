@@ -16,6 +16,7 @@
     // Storing Capital city so it can be passed into weather API for current weather
     $city = $decode['geonames'][0]['capital'];
     $countryName = $decode['geonames'][0]['countryName'];
+    $countryCode = $_REQUEST['countryCode'];
 
     // Getting Border Coordinates and info from GeoJson file
     $countries = json_decode(file_get_contents('../Resources/countryBorders.geo.json'), true);
@@ -30,7 +31,7 @@
     // Storing Border Info returned from file in Borders
     $output['Borders'] = $filtered['geometry'];
 
-    // Getting Country Info from GeoNames
+    /*// Getting Country Info from GeoNames
     $key = "92c6ebcaed0b46eaa17eff05b0dc0a1e";
     $url = "https://api.opencagedata.com/geocode/v1/json?q=" . $_REQUEST['countryCode'] . "&key=" . $key . "&pretty=1";
 
@@ -41,12 +42,13 @@
     curl_close($curl);
     $decode = json_decode($result,true);	
     
-    $output['GeoNames'] = $decode['results'][0];
+    $output['GeoNames'] = $decode['results'][0];*/
     
-    // Triposo API Call which gives information about top 10 cities within the country
 
     if (stripos($countryName, ' ')) {
         $country = str_replace(' ', '_', $countryName);
+    } elseif ($countryName == 'Bahamas') {
+        $country = "The_Bahamas";
     } else {
         $country = $countryName;
     }
@@ -56,6 +58,21 @@
     } else {
         $cityName = $city;
     }
+
+    // Getting Country Info from GeoNames
+    $key = "92c6ebcaed0b46eaa17eff05b0dc0a1e";
+    $url = "https://api.opencagedata.com/geocode/v1/json?q=" . $country . "&key=" . $key . "&pretty=1";
+
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($curl);
+    curl_close($curl);
+    $decode = json_decode($result,true);	
+    
+    $output['GeoNames'] = $decode['results'][0];
+
+    // Triposo API Call which gives information about top 10 cities within the country
 
     $account = 'C50AK397';
     $token = 'j3z2565mhit6vlidfk6skusr4kolptxn';

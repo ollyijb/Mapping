@@ -24,8 +24,4 @@
 
 #mapid { height: 100vh; } 
 
-#countryInfo {display: none;}
-
-#weatherInfo {display: none;}
-
 .leaflet-popup {max-width: auto;}

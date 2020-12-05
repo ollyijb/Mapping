@@ -2,7 +2,6 @@
     // Getting Country Name and Code from GeoNames
     $url='http://api.geonames.org/countryCodeJSON?formatted=true&lat=' . $_REQUEST['lat'] . '&lng=' . $_REQUEST['lng'] . '&username=ollyijb&style=full';
 
-    
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -58,10 +57,12 @@
     
     $output['GeoNames'] = $decode['results'][0];
     
-    // Triposo API Call which gives information about top 10 cities within the country
+    // Adjusting Variables so they are API friendly by replacing spaces with underscores
 
     if (stripos($countryName, ' ')) {
         $country = str_replace(' ', '_', $countryName);
+    } elseif ($countryName == 'Bahamas') {
+        $country = "The_Bahamas";
     } else {
         $country = $countryName;
     }
@@ -72,6 +73,7 @@
         $cityName = $city;
     }
 
+    // Triposo API Call which gives information about top 10 cities within the country
     $account = 'C50AK397';
     $token = 'j3z2565mhit6vlidfk6skusr4kolptxn';
     $url = 'https://www.triposo.com/api/20201111/location.json?part_of=' . $country . '&tag_labels=city&count=10&fields=all&order_by=-score&account=' . $account . '&token=' . $token;
