@@ -37,7 +37,7 @@ $(document).ready(function () {
             };
 
             firstAPICall(useObj).then((result) => {
-                console.log(result.capitalCoords);
+                //console.log(result.capitalCoords);
                 setBorders(result);
                 dropCitiesWrapperFunction(result);
                 dropParksWrapper(result);
@@ -730,7 +730,7 @@ $('#showTemperture').click(function (event) {
 // Adding functionality to the show capital button
 $('#showCapital').click(function () {
     if ($('#showCapital').html() == 'Show Capital') {
-        map.setView([dataStore[0].capitalCoords.lat, dataStore[0].capitalCoords.lon], 11);
+        map.setView([dataStore[0].capitalCoords.latitude, dataStore[0].capitalCoords.longitude], 11);
         $('.navbar-collapse').collapse('hide');
         $('#showCapital').html('Back to Country');
     } else {

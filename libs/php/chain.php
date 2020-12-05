@@ -56,44 +56,8 @@
     curl_close($curl);
     $decode = json_decode($result,true);	
     
-    //$output['status']['code'] = $decode['status']['code'];
-    //$output['status']['message'] = $decode['status']['message'];
-	//$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
     $output['GeoNames'] = $decode['results'][0];
     
-    // API Call to Open Weather
-    $key = 'cfdde55e3e994683d2f49995d1215fed';
-    $url = 'api.openweathermap.org/data/2.5/weather?q='. $city . '&units=metric&appid=' . $key;
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl); 
-    $decode = json_decode($result,true);
-
-    $output['CurrentWeather'] = $decode;
-
-    // Storing Capital city Lat & Long coordinates
-    $cityLat = $decode['coord']['lat'];
-    $cityLon = $decode['coord']['lon'];
-
-    $output['capitalCoords'] = $decode['coord'];
-
-    // API Call to Open Weather
-    $key = '2ae19805acbcf4bbe1649d5d2635a30e';
-    $url = 'https://api.openweathermap.org/data/2.5/onecall?lat=' . $cityLat . '&lon=' . $cityLon . '&units=metric&exclude=current,minutely,hourly&appid=' . $key;
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl); 
-    $decode = json_decode($result,true);
-
-    $output['Forecast'] = $decode['daily'];
-
-
     // Triposo API Call which gives information about top 10 cities within the country
 
     if (stripos($countryName, ' ')) {
@@ -134,8 +98,24 @@
 
     $output['NationalParks'] = $decode['results'];
 
+    // Getting City ID & Accurate coordinates
+    $url = 'https://www.triposo.com/api/20201111/location.json?part_of=' . $country . '&tag_labels=city&annotate=trigram:' . $cityName . '&trigram=>0.7&fields=id,coordinates&count=1&account=' . $account . '&token=' . $token;
+    
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($curl);
+    curl_close($curl); 
+    $decode = json_decode($result,true);
+
+    $cityID = $decode['results'][0]['id'];
+
+    $output['capitalCoords'] = $decode['results'][0]['coordinates'];
+    $cityLat = $decode['results'][0]['coordinates']['latitude'];
+    $cityLon = $decode['results'][0]['coordinates']['longitude'];
+
     // Best Places in Capital
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityName . '&tag_labels=topattractions&count=10&account=' . $account. '&token=' . $token;
+    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=topattractions&count=10&account=' . $account. '&token=' . $token;
 
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -147,7 +127,7 @@
     $output['CapitalTopAttractions'] = $decode['results'];
 
     // Top Restaurants in Capital
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityName . '&tag_labels=cuisine&count=10&account=' . $account. '&token=' . $token;
+    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=cuisine&count=10&account=' . $account. '&token=' . $token;
 
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -159,7 +139,7 @@
     $output['CapitalRestaurants'] = $decode['results'];
 
     // Top Hotels in Capital
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityName . '&tag_labels=hotels&count=10&account=' . $account. '&token=' . $token;
+    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=hotels&count=10&account=' . $account. '&token=' . $token;
 
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -171,7 +151,7 @@
     $output['CapitalHotels'] = $decode['results'];
 
     // Top Tours in Capital
-    $url = 'https://www.triposo.com/api/20201111/tour.json?location_ids=' . $cityName . '&count=10&account=' . $account . '&token=' . $token;
+    $url = 'https://www.triposo.com/api/20201111/tour.json?location_ids=' . $cityID . '&count=10&account=' . $account . '&token=' . $token;
 
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -182,9 +162,34 @@
 
     $output['CapitalTours'] = $decode['results'];
 
-    header('Content-Type: application/json; charset=UTF-8');
-    //http_response_code(400);
+    // API Call to Open Weather to get current Weather
+    $key = 'cfdde55e3e994683d2f49995d1215fed';
+    $url = 'api.openweathermap.org/data/2.5/weather?lat='. $cityLat . '&lon=' . $cityLon . '&units=metric&appid=' . $key;
 
-	echo json_encode($output); 
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($curl);
+    curl_close($curl); 
+    $decode = json_decode($result,true);
+
+    $output['CurrentWeather'] = $decode;
+
+    // API Call to Open Weather to get Week of Forecasts
+    $key = '2ae19805acbcf4bbe1649d5d2635a30e';
+    $url = 'https://api.openweathermap.org/data/2.5/onecall?lat=' . $cityLat . '&lon=' . $cityLon . '&units=metric&exclude=current,minutely,hourly&appid=' . $key;
+
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($curl);
+    curl_close($curl); 
+    $decode = json_decode($result,true);
+
+    $output['Forecast'] = $decode['daily'];
+
+    header('Content-Type: application/json; charset=UTF-8');
+
+    echo json_encode($output); 
     
 ?>
