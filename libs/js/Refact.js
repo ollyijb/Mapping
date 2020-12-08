@@ -7,6 +7,164 @@ let useObj;
 // Stores data received from API Routines
 let dataStore = [];
 
+// List for Terms used in Map Key
+let keyTerms = ['Your Location', 'City', 'National Park', 'Restaurant', 'Hotel', 'Tourist Attraction'];
+
+// Colours for the icons used in Map Key
+let keyColours = ['beige', 'blue', 'green', 'red', 'pink', 'orange'];
+
+/*-------------------------------------- Creating Basic Map ----------------------------------------------------*/
+
+let map = L.map('mapid');
+
+let tiles = new L.TileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    subdomains: 'abcd',
+    minZoom: 0,
+    maxZoom: 18,
+    ext: 'png'
+});
+map.addLayer(tiles);
+
+/*-------------------------------------- Weather Layers ----------------------------------------------------*/
+
+// Getting a clouds layer
+let clouds = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
+    layer: 'clouds_new',
+    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
+});
+
+//Getting a precipitation layer
+let precipitation = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
+    layer: 'precipitation_new',
+    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
+});
+
+//Getting a pressure layer
+let pressure = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
+    layer: 'pressure_new',
+    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
+});
+
+//Getting a precipitation layer
+let wind = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
+    layer: 'wind_new',
+    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
+});
+
+//Getting a precipitation layer
+let temp = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
+    layer: 'temp_new',
+    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
+});
+
+// List of Weather Layers
+let weatherOverlays = {
+    "Clouds": clouds,
+    "Precipitation": precipitation,
+    "Pressure": pressure,
+    "Wind": wind,
+    "Temperatures": temp
+};
+
+// Setting a layer control for the map
+L.control.layers(null, weatherOverlays).addTo(map);
+
+/*-------------------------------------- Map Icons ----------------------------------------------------*/
+
+// Setting Home Icon
+let homeIcon = L.AwesomeMarkers.icon({
+    icon: 'location',
+    iconColor: 'black',
+    markerColor: 'beige',
+    prefix: 'ion'
+});
+
+// Setting City Icon
+let cityIcon = L.AwesomeMarkers.icon({
+    icon: 'compass',
+    iconColor: 'black',
+    markerColor: 'blue',
+    prefix: 'ion'
+});
+
+// Setting National Park Icon
+let parkIcon = L.AwesomeMarkers.icon({
+    icon: 'leaf',
+    iconColor: 'black',
+    markerColor: 'green',
+    prefix: 'ion'
+});
+
+// Setting Restaurant Icon
+let restaurantIcon = L.AwesomeMarkers.icon({
+    icon: 'fork',
+    iconColor: 'black',
+    markerColor: 'red',
+    prefix: 'ion'
+});
+
+// Setting Attraction Icon
+let attractionIcon = L.AwesomeMarkers.icon({
+    icon: 'star',
+    iconColor: 'black',
+    markerColor: 'orange',
+    prefix: 'ion'
+});
+
+// Setting Tour Icon
+let tourIcon = L.AwesomeMarkers.icon({
+    icon: 'eye',
+    iconColor: 'black',
+    markerColor: 'white',
+    prefix: 'ion'
+});
+
+// Setting Hotel Icon
+let hotelIcon = L.AwesomeMarkers.icon({
+    icon: 'home',
+    iconColor: 'black',
+    markerColor: 'pink',
+    prefix: 'ion'
+});
+
+/*------------------------------------ Icon Options --------------------------------------------------*/
+// Setting Popup options for City
+let cityOptions = {
+    keepInView: true,
+    className: 'CitiesPopUp'
+};
+
+// Setting Popup options for Park
+let parkOptions = {
+    keepInView: true,
+    className: 'ParksPopUp'
+};
+
+// Setting Popup options for Restaurant
+let restaurantOptions = {
+    keepInView: true,
+    className: 'restaurantsPopUp'
+};
+
+// Setting Popup options for Attraction
+let attractionsOptions = {
+    keepInView: true,
+    className: 'attractionsPopUp'
+};
+
+// Setting Popup options for Hotel
+let hotelOptions = {
+    keepInView: true,
+    className: 'hotelsPopUp'
+};
+
+// Setting Popup options for Tour
+let tourOptions = {
+    keepInView: true,
+    className: 'toursPopUp'
+};
+
 /*----------------------------- Run ----------------------------*/
 $(document).ready(function () {
     if (!navigator.geolocation) {
@@ -62,344 +220,56 @@ $(document).ready(function () {
         });
     }
 });
-/*------------------------------------- Location Functions -------------------------*/
 
-// Gets User Location
-const getUserLocation = (options) => {
-    return new Promise(function (resolve, reject) {
-        navigator.geolocation.getCurrentPosition(resolve, reject, options);
-    });
-};
+/*-------------------------------------- Functions ----------------------------------------------------*/
 
-// Uses User Location to create marker and set initial map view
-const useUsersLocation = (position) => {
-    let lat = position.coords.latitude.toFixed(6);
-    let long = position.coords.longitude.toFixed(6);
-    let userCoords = { latitude: lat, longitude: long };
-    let userMarker = L.marker([lat, long], { icon: homeIcon }).addTo(map);
-    let userPopUp = "<h4> You are Here!</h4>";
-    userMarker.bindPopup(userPopUp).addTo(map);
-    map.setView([lat, long], 6);
-    return userCoords;
-};
-
-// Makes the first call to the API's
-const firstAPICall = (coordsObj) => {
-    return new Promise(function (resolve, reject) {
-        $.ajax({
-            url: "libs/php/chain.php",
-            type: "POST",
-            dataType: "JSON",
-            data: {
-                lat: coordsObj.latitude,
-                lng: coordsObj.longitude
-            },
-            success: function (result) {
-                console.log(result);
-                $('#preloader').fadeOut(200);
-                $('#status').fadeOut(200);
-                resolve(result);
-            },
-            error: (err) => {
-                console.log(err);
-                reject(err);
-            }
-        });
-    });
-};
-
-// AJAX Routine for users selected country in Select Box
-const getSelectLocationData = (code) => {
-    return new Promise(function (resolve, reject) {
-        $('#preloader').show();
-        $('#status').show();
-        $.ajax({
-            url: "libs/php/selectData.php",
-            type: "POST",
-            dataType: "JSON",
-            data: {
-                countryCode: code
-            },
-            success: function (result) {
-                console.log(result);
-                resolve(result);
-                $('#preloader').fadeOut(200);
-                $('#status').fadeOut(200);
-                $('.navbar-collapse').collapse('hide');
-            },
-            error: (err) => {
-                console.log(err);
-                reject(err);
-            }
-        });
-    });
-};
-
-// Sets borders retrieved from API call & Sets new Optimum View
-const setBorders = (borderObj) => {
-    let borders = borderObj.Borders;
-    let border = L.geoJSON(borders).addTo(map);
-    map.fitBounds(border.getBounds());
-};
-
-// A helper function for adding and removing layers such as weather layers to the map
-const displayMapLayer = (layer) => {
-    if (map.hasLayer(layer)) {
-        $(this).removeClass('selected');
-        map.removeLayer(layer);
-    } else {
-        map.addLayer(layer);
-        $(this).addClass('selected');
-    }
-};
-
-/*-------------------------------------- Creating Basic Map ----------------------------------------------------*/
-
-let map = L.map('mapid');
-
-let tiles = new L.TileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
-    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    subdomains: 'abcd',
-    minZoom: 0,
-    maxZoom: 18,
-    ext: 'png'
-});
-map.addLayer(tiles);
-
-/*-------------------------------------- Weather Layers ----------------------------------------------------*/
-
-// Getting a clouds layer
-let clouds = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
-    layer: 'clouds_new',
-    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
-});
-
-//Getting a precipitation layer
-let precipitation = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
-    layer: 'precipitation_new',
-    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
-});
-
-//Getting a pressure layer
-let pressure = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
-    layer: 'pressure_new',
-    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
-});
-
-//Getting a precipitation layer
-let wind = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
-    layer: 'wind_new',
-    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
-});
-
-//Getting a precipitation layer
-let temp = new L.TileLayer('https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={appid}', {
-    layer: 'temp_new',
-    appid: '2ae19805acbcf4bbe1649d5d2635a30e'
-});
-
-/*-------------------------------------- Map Icons ----------------------------------------------------*/
-
-// Setting Home Icon
-let homeIcon = L.AwesomeMarkers.icon({
-    icon: 'location',
-    iconColor: 'black',
-    markerColor: 'purple',
-    prefix: 'ion'
-});
-
-// Setting City Icon
-let cityIcon = L.AwesomeMarkers.icon({
-    icon: 'compass',
-    iconColor: 'black',
-    markerColor: 'blue',
-    prefix: 'ion'
-});
-
-// Setting National Park Icon
-let parkIcon = L.AwesomeMarkers.icon({
-    icon: 'leaf',
-    iconColor: 'black',
-    markerColor: 'green',
-    prefix: 'ion'
-});
-
-// Setting Restaurant Icon
-let restaurantIcon = L.AwesomeMarkers.icon({
-    icon: 'fork',
-    iconColor: 'black',
-    markerColor: 'red',
-    prefix: 'ion'
-});
-
-// Setting Attraction Icon
-let attractionIcon = L.AwesomeMarkers.icon({
-    icon: 'star',
-    iconColor: 'black',
-    markerColor: 'orange',
-    prefix: 'ion'
-});
-
-// Setting Tour Icon
-let tourIcon = L.AwesomeMarkers.icon({
-    icon: 'eye',
-    iconColor: 'black',
-    markerColor: 'white',
-    prefix: 'ion'
-});
-
-// Setting Hotel Icon
-let hotelIcon = L.AwesomeMarkers.icon({
-    icon: 'home',
-    iconColor: 'black',
-    markerColor: 'pink',
-    prefix: 'ion'
-});
-
-// Setting Popup options for City
-let cityOptions = {
-    keepInView: true,
-    className: 'CitiesPopUp'
-};
-
-// Setting Popup options for Park
-let parkOptions = {
-    keepInView: true,
-    className: 'ParksPopUp'
-};
-
-// Setting Popup options for Restaurant
-let restaurantOptions = {
-    keepInView: true,
-    className: 'restaurantsPopUp'
-};
-
-// Setting Popup options for Attraction
-let attractionsOptions = {
-    keepInView: true,
-    className: 'attractionsPopUp'
-};
-
-// Setting Popup options for Hotel
-let hotelOptions = {
-    keepInView: true,
-    className: 'hotelsPopUp'
-};
-
-// Setting Popup options for Tour
-let tourOptions = {
-    keepInView: true,
-    className: 'toursPopUp'
-};
-
-/*-------------------------------------- Info Functions ----------------------------------------------------*/
-
-// Custom Marker generator to pass various Markers
-const generateMarker = (coordsList, iconVar) => {
-    let marker = L.marker([coordsList.lat, coordsList.lon], { icon: iconVar }).addTo(map);
-    return marker;
-};
-
-// Restuarant Validator
-const restaurantValidator = (restaurant) => {
-    let restaurantObj = {
-        name: restaurant.name,
+// Validating attractions
+const attractionValidator = (attraction) => {
+    let attractionObj = {
+        name: attraction.name,
         coords: {
-            lat: restaurant.coordinates.latitude,
-            lon: restaurant.coordinates.longitude
+            lat: attraction.coordinates.latitude,
+            lon: attraction.coordinates.longitude
         },
-        score: restaurant.score,
-        image: restaurant.images[0],
-        url: restaurant.attribution[1],
+        image: attraction.images[0],
+        url: attraction.attribution[1],
+        score: attraction.score,
+        snippet: attraction.snippet,
         text: 'Click Here to Find Out More',
-        snippet: restaurant.snippet
-    }
-    if (!restaurantObj.score) {
-        restaurantObj.score = 'N/A';
-    } else {
-        restaurantObj.score = restaurant.score.toFixed(2);
-    }
-    if (!restaurantObj.image) {
-        restaurantObj.image = '/Resouces/image-not-found.png';
-        restaurantObj.alt = 'No image Found';
-    } else {
-        restaurantObj.image = restaurant.images[0].sizes.thumbnail.url;
-        restaurantObj.alt = restaurant.name + 'image';
-    }
-    if (!restaurantObj.url) {
-        restaurantObj.url = "No Website Found";
-        restaurantObj.text = "No links found";
-    } else {
-        restaurantObj.url = restaurant.attribution[1].url;
-    }
-    if (!restaurantObj.snippet) {
-        restaurantObj.snippet = "No Description Found";
-    }
-    return restaurantObj;
-};
+        pricing: {
+            info: attraction.booking_info
+        }
+    };
 
-// Restaurant PopUp Generator
-const generateRestaurantPopUp = (restaurant) => {
-    let restaurantTemplate = `
-    <h4>${restaurant.name}</h4>
-    <p>Score: ${restaurant.score}</p>
-    <p>${restaurant.snippet}</p>
-    <a href="${restaurant.url}" target="_blank">${restaurant.text}</a>
-    <img src="${restaurant.image}" alt="${restaurant.alt}">`
-    return restaurantTemplate;
-};
-
-// Park PopUp Generator
-const generateParkPopUp = (park) => {
-    let parkTemplate = `
-    <h4>${park.name}</h4>
-    <p>${park.score}</p>
-    <p>${park.snippet}</p>
-    <a href="${park.url}" target="_blank">Click to Learn More about ${park.name}</a>
-    <img src="${park.image}" alt="${park.name} image">`;
-    return parkTemplate;
-};
-
-//Park Validator
-const parkValidator = (park) => {
-    let parkObj = {
-        name: park.name,
-        coords: {
-            lat: park.coordinates.latitude,
-            lon: park.coordinates.longitude
-        },
-        image: park.images[0].sizes.thumbnail.url,
-        score: park.score,
-        snippet: park.snippet,
-        url: park.attribution[0].url,
-    }
-    if (!parkObj.snippet) {
-        parkObj.snippet = 'No snippet found';
-    }
-    if (!parkObj.score) {
-        parkObj.score = 'N/A';
+    if (!attractionObj.pricing.info) {
+        attractionObj.pricing.price = ' ?? ';
+        attractionObj.pricing.currency = ' ?? ';
     } else {
-        parkObj.score = park.score.toFixed(2);
+        attractionObj.pricing.price = attraction.booking_info.price.amount;
+        attractionObj.pricing.currency = attraction.booking_info.price.currency;
     }
-    if (!parkObj.url) {
-        parkObj.url = 'No Website Found';
+    if (!attractionObj.image) {
+        attractionObj.image = '/Resouces/image-not-found.png';
+        attractionObj.alt = 'No image Found';
+    } else {
+        attractionObj.image = attraction.images[0].sizes.thumbnail.url;
+        attractionObj.alt = attraction.name + 'image';
     }
-    if (!parkObj.image) {
-        parkObj.image = '/Resouces/image-not-found.png';
+    if (!attractionObj.url) {
+        attractionObj.url = "No Website Found";
+        attractionObj.text = "No links found";
+    } else {
+        attractionObj.url = attraction.attribution[1].url;
     }
-    return parkObj;
-};
-
-// Top Cities Generator
-const generateCitiesPopUp = (city) => {
-    let cityTemplate = `
-    <h4>${city.name}</h4>
-    <p>${city.snippet}</p>
-    <p>Score: ${city.score}</p>
-    <p>Population: ${city.population}</p>
-    <a href="${city.url}" target="_blank">Click to Learn More about ${city.name}</a>
-    <img src="${city.image}" alt="${city.alt} image">`;
-    return cityTemplate;
+    if (!attractionObj.snippet) {
+        attractionObj.snippet = "No Description Found";
+    }
+    if (!attractionObj.score) {
+        attractionObj.score = 'N/A';
+    } else {
+        attractionObj.score = attraction.score.toFixed(2);
+    }
+    return attractionObj;
 };
 
 // Validating City 
@@ -443,7 +313,30 @@ const cityValidator = (city) => {
         cityObj.image = city.images[0].sizes.thumbnail.url;
     }
     return cityObj;
-}
+};
+
+// Filling Country Info
+const countryTemplate = (country) => {
+    let template = `
+    <h4>${country.name}</h4>
+    <p><b>Flag: </b>${country.flag}</p>
+    <p><b>Population: </b>${country.population}</p>
+    <p><b>Capital: </b>${country.capital}</p>
+    <p><b>Calling Code: </b>${country.callingCode}</p>
+    <h5>Currency Info</h5>
+    <p><b>Code: </b>${country.currencyInfo.currencyCode}</p>
+    <p><b>Name: </b>${country.currencyInfo.currencyName}</p>
+    <p><b>Symbol: </b>${country.currencyInfo.currencySybol}</p>
+    <h5>Driving Info</h5>
+    <p><b>Side of Road: </b>${country.drivingSide}</p>
+    <p><b>Speed in: </b>${country.drivingUnits}</p>
+    <h5>Weather</h5>
+    <p><img src=${country.weatherIcon} alt=${country.weatherDescription} ><b>${country.weatherDescription}</b></p>
+    <p><b>Temperature: </b>${country.temperature}</p>
+    <p><b>Sunrise: </b>${country.sunrise}</p>
+    <p><b>Sunset: </b>${country.sunset}</p>`;
+    return template;
+};
 
 // Validating Country Information
 const countryValidator = (result) => {
@@ -523,102 +416,16 @@ const countryValidator = (result) => {
     return country;
 };
 
-// Filling Country Info
-const countryTemplate = (country) => {
-    let template = `
-    <h4>${country.name}</h4>
-    <p><b>Flag: </b>${country.flag}</p>
-    <p><b>Population: </b>${country.population}</p>
-    <p><b>Capital: </b>${country.capital}</p>
-    <p><b>Calling Code: </b>${country.callingCode}</p>
-    <h5>Currency Info</h5>
-    <p><b>Code: </b>${country.currencyInfo.currencyCode}</p>
-    <p><b>Name: </b>${country.currencyInfo.currencyName}</p>
-    <p><b>Symbol: </b>${country.currencyInfo.currencySybol}</p>
-    <h5>Driving Info</h5>
-    <p><b>Side of Road: </b>${country.drivingSide}</p>
-    <p><b>Speed in: </b>${country.drivingUnits}</p>
-    <h5>Weather</h5>
-    <p><img src=${country.weatherIcon} alt=${country.weatherDescription} ><b>${country.weatherDescription}</b></p>
-    <p><b>Temperature: </b>${country.temperature}</p>
-    <p><b>Sunrise: </b>${country.sunrise}</p>
-    <p><b>Sunset: </b>${country.sunset}</p>`;
-    return template;
-};
-
-// Validating attractions
-const attractionValidator = (attraction) => {
-    let attractionObj = {
-        name: attraction.name,
-        coords: {
-            lat: attraction.coordinates.latitude,
-            lon: attraction.coordinates.longitude
-        },
-        image: attraction.images[0],
-        url: attraction.attribution[1],
-        score: attraction.score,
-        snippet: attraction.snippet,
-        text: 'Click Here to Find Out More',
-        pricing: {
-            info: attraction.booking_info
-        }
-    };
-
-    if (!attractionObj.pricing.info) {
-        attractionObj.pricing.price = ' ?? ';
-        attractionObj.pricing.currency = ' ?? ';
-    } else {
-        attractionObj.pricing.price = attraction.booking_info.price.amount;
-        attractionObj.pricing.currency = attraction.booking_info.price.currency;
-    }
-    if (!attractionObj.image) {
-        attractionObj.image = '/Resouces/image-not-found.png';
-        attractionObj.alt = 'No image Found';
-    } else {
-        attractionObj.image = attraction.images[0].sizes.thumbnail.url;
-        attractionObj.alt = attraction.name + 'image';
-    }
-    if (!attractionObj.url) {
-        attractionObj.url = "No Website Found";
-        attractionObj.text = "No links found";
-    } else {
-        attractionObj.url = attraction.attribution[1].url;
-    }
-    if (!attractionObj.snippet) {
-        attractionObj.snippet = "No Description Found";
-    }
-    if (!attractionObj.score) {
-        attractionObj.score = 'N/A';
-    } else {
-        attractionObj.score = attraction.score.toFixed(2);
-    }
-    return attractionObj;
-};
-
-// Generating Attraction Popup
-const generateAttractionPopUp = (attraction) => {
-    let attractionTemplate = `
-    <h4>${attraction.name}</h4>
-    <p>Score: ${attraction.score}</p>
-    <p>Price: ${attraction.pricing.price} Currency: ${attraction.pricing.currency}</p>
-    <p>${attraction.snippet}</p>
-    <a href="${attraction.url}" target="_blank">${attraction.text}</a>
-    <img src="${attraction.image}" alt="${attraction.alt}">`
-    return attractionTemplate;
-};
-
-/*------------------------------------ Wrapper Functions ------------------------------------*/
-
-// Adds Restaurants to Map
-const dropRestaurantsWrapper = (result) => {
-    let restaurantlist = result.CapitalRestaurants;
-    if (!restaurantlist) {
+// Adds Attractions to Map
+const dropAttractionsWrapper = (result) => {
+    let attractions = result.CapitalTopAttractions;
+    if (!attractions) {
         return;
     } else {
-        for (let i = 0; i < restaurantlist.length; i++) {
-            let restaurant = restaurantValidator(restaurantlist[i]);
-            let restuarantMarker = generateMarker(restaurant.coords, restaurantIcon);
-            restuarantMarker.bindPopup(generateRestaurantPopUp(restaurant), restaurantOptions);
+        for (let i = 0; i < attractions.length; i++) {
+            let attraction = attractionValidator(attractions[i]);
+            let attractionMarker = generateMarker(attraction.coords, attractionIcon);
+            attractionMarker.bindPopup(generateAttractionPopUp(attraction), attractionsOptions);
         }
     }
 };
@@ -637,6 +444,20 @@ const dropCitiesWrapperFunction = (result) => {
     }
 };
 
+// Adds Hotels to Map
+const dropHotelsWrapper = (result) => {
+    let hotels = result.CapitalHotels;
+    if (!hotels) {
+        return;
+    } else {
+        for (let i = 0; i < hotels.length; i++) {
+            let hotel = attractionValidator(hotels[i]);
+            let hotelMarker = generateMarker(hotel.coords, hotelIcon);
+            hotelMarker.bindPopup(generateAttractionPopUp(hotel), hotelOptions);
+        }
+    }
+};
+
 // Adds Parks to Map
 const dropParksWrapper = (result) => {
     let parks = result.NationalParks;
@@ -651,33 +472,19 @@ const dropParksWrapper = (result) => {
     }
 };
 
-// Adds Attractions to Map
-const dropAttractionsWrapper = (result) => {
-    let attractions = result.CapitalTopAttractions;
-    if (!attractions) {
+// Adds Restaurants to Map
+const dropRestaurantsWrapper = (result) => {
+    let restaurantlist = result.CapitalRestaurants;
+    if (!restaurantlist) {
         return;
     } else {
-        for (let i = 0; i < attractions.length; i++) {
-            let attraction = attractionValidator(attractions[i]);
-            let attractionMarker = generateMarker(attraction.coords, attractionIcon);
-            attractionMarker.bindPopup(generateAttractionPopUp(attraction), attractionsOptions);
+        for (let i = 0; i < restaurantlist.length; i++) {
+            let restaurant = restaurantValidator(restaurantlist[i]);
+            let restuarantMarker = generateMarker(restaurant.coords, restaurantIcon);
+            restuarantMarker.bindPopup(generateRestaurantPopUp(restaurant), restaurantOptions);
         }
     }
 };
-
-// Adds Hotels to Map
-const dropHotelsWrapper = (result) => {
-    let hotels = result.CapitalHotels;
-    if (!hotels) {
-        return;
-    } else {
-        for (let i = 0; i < hotels.length; i++) {
-            let hotel = attractionValidator(hotels[i]);
-            let hotelMarker = generateMarker(hotel.coords, hotelIcon);
-            hotelMarker.bindPopup(generateAttractionPopUp(hotel), hotelOptions);
-        }
-    }
-}
 
 // Fills Country Info 
 const fillCountryWrapper = (result) => {
@@ -685,7 +492,210 @@ const fillCountryWrapper = (result) => {
     $('#countryInfoContent').html(countryTemplate(countryValidator(result)));
 };
 
-/*----------------------------- Events ----------------------------*/
+// Makes the first call to the API's
+const firstAPICall = (coordsObj) => {
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: "libs/php/chain.php",
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                lat: coordsObj.latitude,
+                lng: coordsObj.longitude
+            },
+            success: function (result) {
+                console.log(result);
+                $('#preloader').fadeOut(200);
+                $('#status').fadeOut(200);
+                resolve(result);
+            },
+            error: (err) => {
+                console.log(err);
+                reject(err);
+            }
+        });
+    });
+};
+
+// Generating Attraction Popup
+const generateAttractionPopUp = (attraction) => {
+    let attractionTemplate = `
+    <h4>${attraction.name}</h4>
+    <p>Score: ${attraction.score}</p>
+    <p>Price: ${attraction.pricing.price} Currency: ${attraction.pricing.currency}</p>
+    <p>${attraction.snippet}</p>
+    <a href="${attraction.url}" target="_blank">${attraction.text}</a>
+    <img src="${attraction.image}" alt="${attraction.alt}">`
+    return attractionTemplate;
+};
+
+// Top Cities Generator
+const generateCitiesPopUp = (city) => {
+    let cityTemplate = `
+    <h4>${city.name}</h4>
+    <p>${city.snippet}</p>
+    <p>Score: ${city.score}</p>
+    <p>Population: ${city.population}</p>
+    <a href="${city.url}" target="_blank">Click to Learn More about ${city.name}</a>
+    <img src="${city.image}" alt="${city.alt} image">`;
+    return cityTemplate;
+};
+
+// Custom Marker generator to pass various Markers
+const generateMarker = (coordsList, iconVar) => {
+    let marker = L.marker([coordsList.lat, coordsList.lon], { icon: iconVar }).addTo(map);
+    return marker;
+};
+
+// Park PopUp Generator
+const generateParkPopUp = (park) => {
+    let parkTemplate = `
+    <h4>${park.name}</h4>
+    <p>${park.score}</p>
+    <p>${park.snippet}</p>
+    <a href="${park.url}" target="_blank">Click to Learn More about ${park.name}</a>
+    <img src="${park.image}" alt="${park.name} image">`;
+    return parkTemplate;
+};
+
+// Restaurant PopUp Generator
+const generateRestaurantPopUp = (restaurant) => {
+    let restaurantTemplate = `
+    <h4>${restaurant.name}</h4>
+    <p>Score: ${restaurant.score}</p>
+    <p>${restaurant.snippet}</p>
+    <a href="${restaurant.url}" target="_blank">${restaurant.text}</a>
+    <img src="${restaurant.image}" alt="${restaurant.alt}">`
+    return restaurantTemplate;
+};
+
+// AJAX Routine for users selected country in Select Box
+const getSelectLocationData = (code) => {
+    return new Promise(function (resolve, reject) {
+        $('#preloader').show();
+        $('#status').show();
+        $.ajax({
+            url: "libs/php/selectData.php",
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                countryCode: code
+            },
+            success: function (result) {
+                console.log(result);
+                resolve(result);
+                $('#preloader').fadeOut(200);
+                $('#status').fadeOut(200);
+                $('.navbar-collapse').collapse('hide');
+            },
+            error: (err) => {
+                console.log(err);
+                reject(err);
+            }
+        });
+    });
+};
+
+// Gets User Location
+const getUserLocation = (options) => {
+    return new Promise(function (resolve, reject) {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
+};
+
+//Park Validator
+const parkValidator = (park) => {
+    let parkObj = {
+        name: park.name,
+        coords: {
+            lat: park.coordinates.latitude,
+            lon: park.coordinates.longitude
+        },
+        image: park.images[0],
+        score: park.score,
+        snippet: park.snippet,
+        url: park.attribution[0].url,
+    }
+    if (!parkObj.snippet) {
+        parkObj.snippet = 'No snippet found';
+    }
+    if (!parkObj.score) {
+        parkObj.score = 'N/A';
+    } else {
+        parkObj.score = park.score.toFixed(2);
+    }
+    if (!parkObj.url) {
+        parkObj.url = 'No Website Found';
+    }
+    if (!parkObj.image) {
+        parkObj.image = "/Resouces/image-not-found.png"
+    } else {
+        parkObj.image = park.images[0].sizes.thumbnail.url;
+    }
+    if (!parkObj.image) {
+        parkObj.image = '/Resouces/image-not-found.png';
+    }
+    return parkObj;
+};
+
+// Restuarant Validator
+const restaurantValidator = (restaurant) => {
+    let restaurantObj = {
+        name: restaurant.name,
+        coords: {
+            lat: restaurant.coordinates.latitude,
+            lon: restaurant.coordinates.longitude
+        },
+        score: restaurant.score,
+        image: restaurant.images[0],
+        url: restaurant.attribution[1],
+        text: 'Click Here to Find Out More',
+        snippet: restaurant.snippet
+    }
+    if (!restaurantObj.score) {
+        restaurantObj.score = 'N/A';
+    } else {
+        restaurantObj.score = restaurant.score.toFixed(2);
+    }
+    if (!restaurantObj.image) {
+        restaurantObj.image = '/Resouces/image-not-found.png';
+        restaurantObj.alt = 'No image Found';
+    } else {
+        restaurantObj.image = restaurant.images[0].sizes.thumbnail.url;
+        restaurantObj.alt = restaurant.name + 'image';
+    }
+    if (!restaurantObj.url) {
+        restaurantObj.url = "No Website Found";
+        restaurantObj.text = "No links found";
+    } else {
+        restaurantObj.url = restaurant.attribution[1].url;
+    }
+    if (!restaurantObj.snippet) {
+        restaurantObj.snippet = "No Description Found";
+    }
+    return restaurantObj;
+};
+
+// Sets borders retrieved from API call & Sets new Optimum View
+const setBorders = (borderObj) => {
+    let borders = borderObj.Borders;
+    let border = L.geoJSON(borders).addTo(map);
+    map.fitBounds(border.getBounds());
+};
+
+// Uses User Location to create marker and set initial map view
+const useUsersLocation = (position) => {
+    let lat = position.coords.latitude.toFixed(6);
+    let long = position.coords.longitude.toFixed(6);
+    let userCoords = { latitude: lat, longitude: long };
+    let userMarker = L.marker([lat, long], { icon: homeIcon }).addTo(map);
+    let userPopUp = "<h4> You are Here!</h4>";
+    userMarker.bindPopup(userPopUp).addTo(map);
+    map.setView([lat, long], 6);
+    return userCoords;
+};
+
+/*----------------------------- jQuery Events ----------------------------*/
 
 // Calling php to call json to populate select dropdown menu with countries
 $('#select').load('libs/php/borders.php', function () {
@@ -705,41 +715,6 @@ $('#select').change(function () {
         dropHotelsWrapper(result);
         dataStore.unshift(result);
     });
-});
-
-// Adding and removing clouds layer to map on show clouds button
-$('#showClouds').click(function (event) {
-    event.preventDefault();
-    $('.navbar-collapse').collapse('hide');
-    displayMapLayer(clouds);
-});
-
-// Adding and removing Precipitation layer to map on show clouds button
-$('#showPercipitation').click(function (event) {
-    event.preventDefault();
-    $('.navbar-collapse').collapse('hide');
-    displayMapLayer(precipitation);
-});
-
-// Adding and removing Pressure layer to map on show clouds button
-$('#showPressure').click(function (event) {
-    event.preventDefault();
-    $('.navbar-collapse').collapse('hide');
-    displayMapLayer(pressure);
-});
-
-// Adding and removing WindSpeed layer to map on show clouds button
-$('#showWind').click(function (event) {
-    event.preventDefault();
-    $('.navbar-collapse').collapse('hide');
-    displayMapLayer(wind);
-});
-
-// Adding and removing Temperature layer to map on show clouds button
-$('#showTemperture').click(function (event) {
-    event.preventDefault();
-    $('.navbar-collapse').collapse('hide');
-    displayMapLayer(temp);
 });
 
 // Adding functionality to the show capital button
@@ -773,5 +748,12 @@ $('#weatherForecast').click(function () {
     });
 });
 
+// Fills and shows Map key
+$('#showKey').click(function () {
+    $.each(keyTerms, function (index, value) {
+        $('#keyContent').append(`
+        <h4><svg width="100" height="100"><circle cx="50" cy="50" r="40" stroke="black" fill="${keyColours[index]}"></svg> : ${value}</h4>`);
+    });
+});
 
 

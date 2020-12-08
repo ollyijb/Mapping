@@ -24,7 +24,21 @@
 
 #mapid { 
     height: 93vh; 
+    z-index: 1;
+    position: relative;
 } 
 
+#showKey {
+    z-index: 9000; 
+    margin: 2vw;
+    position: absolute;
+    bottom: 10vw;
+    left: 2vw;
+    background-color: white;
+}
+
+#showKey:hover {
+    background-color: blueviolet;
+}
 
 .leaflet-popup {max-width: auto;}

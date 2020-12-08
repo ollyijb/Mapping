@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Leaflet Map Testing</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
-        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="libs/Src/Bootstrap/bootstrap.min.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="libs/leaflet/leaflet.css" />
-    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" rel="stylesheet">
+    <!-- Font Awesom CSS -->
+    <link rel="stylesheet" href="libs/Src/FontAwesome/font-awesome.min.css">
+    <!-- Awesome Markers CSS -->
     <link rel="stylesheet" href="libs/Resources/dist/leaflet.awesome-markers.css">
     <!-- External Custom CSS -->
     <link rel="stylesheet" type="text/css" href="libs/css/styles.css">
@@ -18,12 +19,8 @@
     <script src="libs/leaflet/leaflet.js"></script>
     <!-- Leaflet Providers -->
     <script src="libs/leaflet/leaflet-providers.js"></script>
-    <!-- External Custom CSS -->
-
-    <!-- Fontawesome -->
-    <!-- <script src="https://kit.fontawesome.com/a91a7a3b25.js" crossorigin="anonymous"></script> -->
-    <!-- Ionicon stylesheet -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
+    <!-- Ionicon CSS -->
+    <link rel="stylesheet" href="libs/Src/IonIcons/ionicons.min.css">
 
 
 </head>
@@ -37,7 +34,7 @@
     </div>
 
     <!-- Add in a Bootstrap navbar with buttons and a select of countries -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light text-center">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light text-center">
         <a class="navbar-brand" href="#">Navbar</a>
         <button class="navbar-toggler" id="navDrop" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -62,20 +59,6 @@
                     <select id="select">
                         <option value="" id=""></option>
                     </select>
-                </li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-item dropdown-toggle btn" href="#" id="weatherDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Weather Maps
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <button id=showClouds class="btn">Show Clouds</button>
-                        <button id=showPercipitation class="btn">Show Percipitation</button>
-                        <button id=showPressure class="btn">Show Pressure</button>
-                        <button id=showWind class="btn">Show Wind Speeds</button>
-                        <button id=showTemperature class="btn">Show Temperatures</button>
-                    </div>
                 </li>
 
             </ul>
@@ -118,21 +101,38 @@
         </div>
     </div>
 
+    <!-- Map Key Modal -->
+    <div class="modal" id="keyModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Key</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" id="keyContent"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Map Container -->
-    <div id="mapid" class="container-fluid"></div>
+    <div id="mapid" class="container-fluid">
+        <div id="keyContainer" class="container">
+            <button id=showKey type="button" class="btn" data-toggle="modal" data-target="#keyModal">Key</button>
+        </div>
+    </div>
 
-
-    <!-- Scripts -->
-    <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+    <!-- jQuery -->
     <script src="libs/js/jquery-3.5.1.min.js"></script>
     <!-- Loading Script -->
     <script src="libs/js/preloader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
-        crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="libs/Src/Bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
     <script src="libs/Resources/dist/leaflet.awesome-markers.js"></script>
     <!-- My JavaScript files -->
-    <!--<script type="application/javascript" src="libs/js/script2.js"></script>-->
     <script type="application/javascript" src="libs/js/Refact.js"></script>
 
 </body>
