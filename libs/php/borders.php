@@ -15,6 +15,7 @@
 
     usort($my_arr, 'cmp');
 
+    echo "<option value=" . "disabled selected hidden>Choose a Country</option>";
     foreach($my_arr as $item) {
         $name = $item->name;
         $countrycode = $item->iso_a2;
