@@ -56,7 +56,8 @@
                         data-target="#showForecastModal">Weather Forecast</button>
                 </li>
                 <li class="nav-item">
-                    <select id="select">
+                    <select id="select" class="form-control">
+                        <!-- <option value="" disabled selected hidden>Choose a Country</option> -->
                         <option value="" id=""></option>
                     </select>
                 </li>
@@ -75,7 +76,7 @@
                     <h4 class="modal-title">Weather Forecasts</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <div id="weatherInfo" class="modal-body">
+                <div id="weatherInfo" class="modal-body modalStyle">
                     <ol id=weatherList></ol>
                 </div>
                 <div class="modal-footer">
@@ -93,7 +94,7 @@
                     <h4 class="modal-title">Country Info</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <div class="modal-body" id="countryInfoContent"></div>
+                <div class="modal-body modalStyle" id="countryInfoContent"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
@@ -109,7 +110,7 @@
                     <h4 class="modal-title">Key</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <div class="modal-body" id="keyContent"></div>
+                <div class="modal-body modalStyle" id="keyContent"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
@@ -132,6 +133,9 @@
     <script src="libs/Src/Bootstrap/bootstrap.bundle.min.js"></script>
     <!-- Leaflet JS -->
     <script src="libs/Resources/dist/leaflet.awesome-markers.js"></script>
+    <!-- Leaflet Spin -->
+    <script src="libs/Src/Leaflet.Spin-1.1.2/spin.js"></script>
+    <script src="libs/Src/Leaflet.Spin-1.1.2/leaflet.spin.min.js"></script>
     <!-- My JavaScript files -->
     <script type="application/javascript" src="libs/js/Refact.js"></script>
 

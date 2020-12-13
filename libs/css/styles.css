@@ -23,7 +23,7 @@
 }
 
 #mapid { 
-    height: 93vh; 
+    height: calc(100vh - 56px); 
     z-index: 1;
     position: relative;
 } 
@@ -41,4 +41,9 @@
     background-color: blueviolet;
 }
 
-.leaflet-popup {max-width: auto;}
+.leaflet-popup {max-width: 250px;}
+
+.modalStyle {
+    max-height: 70vh !important;
+    overflow-y: scroll !important;
+}

@@ -186,7 +186,7 @@ $(document).ready(function () {
 
     } else {
         getUserLocation().then((position) => {
-
+            console.log(position);
             useUsersLocation(position);
 
             useObj = {
@@ -222,6 +222,11 @@ $(document).ready(function () {
 });
 
 /*-------------------------------------- Functions ----------------------------------------------------*/
+
+// Population Formatter
+const formatPopulation = (x) => {
+    return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+};
 
 // Validating attractions
 const attractionValidator = (attraction) => {
@@ -358,6 +363,8 @@ const countryValidator = (result) => {
     };
     if (!country.population) {
         country.population = "No population Data found";
+    } else {
+        country.population = formatPopulation(country.population);
     }
     if (!country.currencyInfo) {
         country.currencyInfo = {
@@ -535,7 +542,7 @@ const generateCitiesPopUp = (city) => {
     <h4>${city.name}</h4>
     <p>${city.snippet}</p>
     <p>Score: ${city.score}</p>
-    <p>Population: ${city.population}</p>
+    <p>Population: ${formatPopulation(city.population)}</p>
     <a href="${city.url}" target="_blank">Click to Learn More about ${city.name}</a>
     <img src="${city.image}" alt="${city.alt} image">`;
     return cityTemplate;
@@ -572,8 +579,9 @@ const generateRestaurantPopUp = (restaurant) => {
 // AJAX Routine for users selected country in Select Box
 const getSelectLocationData = (code) => {
     return new Promise(function (resolve, reject) {
-        $('#preloader').show();
-        $('#status').show();
+        //$('#preloader').show();
+        //$('#status').show();
+        map.spin(true);
         $.ajax({
             url: "libs/php/selectData.php",
             type: "POST",
@@ -584,9 +592,10 @@ const getSelectLocationData = (code) => {
             success: function (result) {
                 console.log(result);
                 resolve(result);
-                $('#preloader').fadeOut(200);
-                $('#status').fadeOut(200);
+                //$('#preloader').fadeOut(200);
+                //$('#status').fadeOut(200);
                 $('.navbar-collapse').collapse('hide');
+                map.spin(false);
             },
             error: (err) => {
                 console.log(err);
@@ -752,8 +761,9 @@ $('#weatherForecast').click(function () {
 $('#showKey').click(function () {
     $.each(keyTerms, function (index, value) {
         $('#keyContent').append(`
-        <h4><svg width="100" height="100"><circle cx="50" cy="50" r="40" stroke="black" fill="${keyColours[index]}"></svg> : ${value}</h4>`);
+        <h4><svg width="50" height="50"><circle cx="25" cy="25" r="20" stroke="black" fill="${keyColours[index]}"></svg> : ${value}</h4>`);
     });
 });
+
 
 

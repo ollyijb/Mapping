@@ -152,18 +152,6 @@
 
     $output['CapitalHotels'] = $decode['results'];
 
-    // Top Tours in Capital
-    $url = 'https://www.triposo.com/api/20201111/tour.json?location_ids=' . $cityID . '&count=10&account=' . $account . '&token=' . $token;
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl); 
-    $decode = json_decode($result,true);
-
-    $output['CapitalTours'] = $decode['results'];
-
     // API Call to Open Weather to get current Weather
     $key = 'cfdde55e3e994683d2f49995d1215fed';
     $url = 'api.openweathermap.org/data/2.5/weather?lat='. $cityLat . '&lon=' . $cityLon . '&units=metric&appid=' . $key;

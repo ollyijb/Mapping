@@ -1,4 +1,6 @@
 <?php
+
+// Rename file to selectData
     $countryBorders = json_decode(file_get_contents("../Resources/countryBorders.geo.json"));
     
     $features = $countryBorders->features;
@@ -21,5 +23,7 @@
         $countrycode = $item->iso_a2;
         echo "<option value=" . "'" . $countrycode . "'>" . $name . "</option>";
     }
+
+    //echo json_encode($my_arr);
 
 ?>
