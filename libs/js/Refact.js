@@ -8,12 +8,14 @@ let useObj;
 // Stores data received from API Routines
 let dataStore = [];
 
-// List for Terms used in Map Key
-let keyTerms = ['Your Location', 'City', 'National Park', 'Restaurant', 'Hotel', 'Tourist Attraction'];
+// List for icon classes used in Map Key
+let keyIcons = ['location', 'compass', 'leaf', 'fork', 'home', 'star'];
 
 // Colours for the icons used in Map Key
 let keyColours = ['beige', 'blue', 'green', 'red', 'pink', 'orange'];
 
+// Key Terms used in Map Key
+let keyTerms = ['Your Location', 'Top Cities', 'Top National Parks', 'Top Restaurants', 'Top Hotels', 'Top Attractions'];
 /*-------------------------------------- Creating Basic Map ----------------------------------------------------*/
 
 let map = L.map('mapid');
@@ -198,7 +200,6 @@ $(document).ready(function () {
             setBorders(result);
             dropCitiesWrapperFunction(result);
             dropParksWrapper(result);
-            //fillCountryWrapper(result);
             dropRestaurantsWrapper(result);
             dropAttractionsWrapper(result);
             dropHotelsWrapper(result);
@@ -224,7 +225,6 @@ $(document).ready(function () {
                     setBorders(result);
                     dropCitiesWrapperFunction(result);
                     dropParksWrapper(result);
-                    //fillCountryWrapper(result);
                     dropRestaurantsWrapper(result);
                     dropAttractionsWrapper(result);
                     dropHotelsWrapper(result);
@@ -240,7 +240,6 @@ $(document).ready(function () {
                 setBorders(result);
                 dropCitiesWrapperFunction(result);
                 dropParksWrapper(result);
-                //fillCountryWrapper(result);
                 dropRestaurantsWrapper(result);
                 dropAttractionsWrapper(result);
                 dropHotelsWrapper(result);
@@ -734,24 +733,7 @@ $('#showCapital').click(function () {
     }
 });
 
-// Fills and shows Week of Weather Forecasts
-/*$('#weatherForecast').click(function () {
-    let forecasts = dataStore[0].Forecast;
-    $('#weatherList').empty();
-    $.each(forecasts, function (index, value) {
-        $('#weatherList').append(`
-        <li>
-            <h4>${new Date(value.dt * 1000).toDateString()}</h4>
-            <p><img src="http://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png" alt="${value.weather[0].description}">${value.weather[0].description}</p>
-            <p>Humidity: ${value.humidity}</p>
-            <p>UVI: ${value.uvi}</p>
-            <h5>Temperatures</h5>
-            <p>Max: ${value.temp.max} Celsius | Min: ${value.temp.min} Celsius</p>
-            <p>Feels like: ${value.feels_like.day} Celsius</p>
-        </li>`);
-    });
-});*/
-
+// Fills and shows weather forecast list using handlebars template
 $('#weatherForecast').click(function () {
     let forecastList = dataStore[0].Forecast;
     let forecasts = [];
@@ -778,15 +760,6 @@ $('#weatherForecast').click(function () {
     });
 });
 
-
-// Fills and shows Map key
-$('#showKey').click(function () {
-    $.each(keyTerms, function (index, value) {
-        $('#keyContent').append(`
-        <h4><svg width="50" height="50"><circle cx="25" cy="25" r="20" stroke="black" fill="${keyColours[index]}"></svg> : ${value}</h4>`);
-    });
-});
-
 $('#showInfo2').click(function () {
     let country = countryValidator(dataStore[0]);
     $('#countryName').html(country.name);
@@ -807,6 +780,14 @@ $('#showInfo2').click(function () {
     $('#sunset').html(country.sunset);
 
 });
+
+// Fills and shows Map key
+/*$('#showKey').click(function () {
+    $.each(keyTerms, function (index, value) {
+        $('#keyContent').append(`
+        <h4><svg width="50" height="50"><circle cx="25" cy="25" r="20" stroke="black" fill="${keyColours[index]}"></svg> : ${value}</h4>`);
+    });
+});*/
 
 // Makes the first call to the API's
 /*const firstAPICall = (coordsObj) => {
@@ -861,3 +842,21 @@ $('#showInfo2').click(function () {
     <p><b>Sunset: </b>${country.sunset}</p>`;
     return template;
 };*/
+
+// Fills and shows Week of Weather Forecasts
+/*$('#weatherForecast').click(function () {
+    let forecasts = dataStore[0].Forecast;
+    $('#weatherList').empty();
+    $.each(forecasts, function (index, value) {
+        $('#weatherList').append(`
+        <li>
+            <h4>${new Date(value.dt * 1000).toDateString()}</h4>
+            <p><img src="http://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png" alt="${value.weather[0].description}">${value.weather[0].description}</p>
+            <p>Humidity: ${value.humidity}</p>
+            <p>UVI: ${value.uvi}</p>
+            <h5>Temperatures</h5>
+            <p>Max: ${value.temp.max} Celsius | Min: ${value.temp.min} Celsius</p>
+            <p>Feels like: ${value.feels_like.day} Celsius</p>
+        </li>`);
+    });
+});*/

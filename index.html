@@ -44,10 +44,6 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <!--<li class="nav-item">
-                    <button id=showInfo class="btn" data-toggle="modal" data-target="#countryInfoModal">Show Country
-                        Info</button>
-                </li>-->
                 <li class="nav-item">
                     <button id=showInfo2 class="btn" data-toggle="modal" data-target="#countryInfoModal2">Show Country
                         Info</button>
@@ -73,23 +69,6 @@
     </nav>
 
     <!-- Modals -->
-    <!-- Forecasts Modal -->
-    <!--<div class="modal" id="showForecastModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Weather Forecasts</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div id="weatherInfo" class="modal-body modalStyle">
-                    <ol id=weatherList></ol>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>-->
 
     <!-- Forecasts Modal -->
     <div class="modal" id="showForecastModal">
@@ -128,22 +107,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Country Info Modal -->
-    <!--<div class="modal" id="countryInfoModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Country Info</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body modalStyle" id="countryInfoContent"></div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>-->
 
     <!-- Country Info Modal -->
     <div class="modal" id="countryInfoModal2">
@@ -186,10 +149,49 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Key</h4>
-                    <ion-icon name="heart"></ion-icon>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <div class="modal-body modalStyle" id="keyContent"></div>
+                <div class="modal-body modalStyle" id="keyContent">
+                    <ul>
+                        <li>
+                            <div class="awesome-marker-icon-green awesome-marker keyIcon">
+                                <i class="ion ion-leaf icon-black"></i>
+
+                            </div>
+                            <p class="keyLabel">Top National Parks</p>
+                        </li>
+                        <li>
+                            <div class="awesome-marker-icon-blue awesome-marker keyIcon">
+                                <i class="ion ion-compass  icon-black"></i>
+                            </div>
+                            <p class="keyLabel">Top Cities</p>
+                        </li>
+                        <li>
+                            <div class="awesome-marker-icon-beige awesome-marker keyIcon">
+                                <i class="ion ion-location  icon-black"></i>
+                            </div>
+                            <p class="keyLabel">Your Location</p>
+                        </li>
+                        <li>
+                            <div class="awesome-marker-icon-orange awesome-marker keyIcon">
+                                <i class="ion ion-star  icon-black"></i>
+                            </div>
+                            <p class="keyLabel">Top Attractions</p>
+                        </li>
+                        <li>
+                            <div class="awesome-marker-icon-red awesome-marker keyIcon">
+                                <i class="ion ion-fork  icon-black"></i>
+                            </div>
+                            <p class="keyLabel">Top Restaurants</p>
+                        </li>
+                        <li>
+                            <div class="awesome-marker-icon-pink awesome-marker keyIcon">
+                                <i class="ion ion-home  icon-black"></i>
+                            </div>
+                            <p class="keyLabel">Top Hotels</p>
+                        </li>
+                    </ul>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
