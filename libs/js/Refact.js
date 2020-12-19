@@ -773,8 +773,8 @@ $('#weatherForecast').click(function () {
     console.log(forecasts);
     let template = document.getElementById('forecast-list-template').innerHTML;
     let renderForecast = Handlebars.compile(template);
-    document.getElementById('forecast-list').innerHTML = renderForecast({
-        forecast: forecasts,
+    document.getElementById('weatherList').innerHTML = renderForecast({
+        forecasts: forecasts,
     });
 });
 

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="libs/Src/Bootstrap/bootstrap.min.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="libs/leaflet/leaflet.css" />
-    <!-- Font Awesom CSS -->
+    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="libs/Src/FontAwesome/font-awesome.min.css">
     <!-- Awesome Markers CSS -->
     <link rel="stylesheet" href="libs/Resources/dist/leaflet.awesome-markers.css">
@@ -19,7 +19,7 @@
     <script src="libs/leaflet/leaflet.js"></script>
     <!-- Leaflet Providers -->
     <script src="libs/leaflet/leaflet-providers.js"></script>
-    <!-- Ionicon CSS -->
+    <!-- Ionicons CSS -->
     <link rel="stylesheet" href="libs/Src/IonIcons/ionicons.min.css">
 
 
@@ -101,33 +101,26 @@
                 </div>
                 <div id="weatherInfo" class="modal-body modalStyle">
                     <ol id=weatherList>
-                        <li class="forecastItem">
-                            <h4 id="date"></h4>
-                            <p><img id="forecastImage"></p>
-                            <p id="forecastDescription"></p>
-                            <p class="infoLabel">Humidity: <span id="forecastHumidity" class="answerDisplay"></span></p>
-                            <p class="infoLabel">UVI: <span id="forecastUVI" class="answerDisplay"></span></p>
-                            <h5 class="subheading">Temperatures</h5>
-                            <p class="infoLabel">Max: <span id="forecastMax" class="answerDisplay"></span> | Min: <span
-                                    id="forecastMin" class="answerDisplay"></span></p>
-                            <p class="infoLabel">Feels like (celsius): <span id="forecastFeel"
-                                    class="answerDisplay"></span></p>
-                        </li>
+                        <!-- A Handlebars Template -->
+                        <template id="forecast-list-template">
+                            {{#each forecasts}}
+                            <li class="forecastItem">
+                                <h4>{{date}}</h4>
+                                <p class="weatherDescription">{{description}}</p>
+                                <p><img src={{url}}></p>
+                                <p class="infoLabel">Humidity: <span class="answerDisplay">{{humidity}}</span></p>
+                                <p class="infoLabel">UVI: <span class="answerDisplay">{{UVI}}</span></p>
+                                <h5 class="subheading">Temperatures</h5>
+                                <p class="infoLabel">Max: <span class="answerDisplay">{{max}}</span> | Min: <span
+                                        class="answerDisplay">{{min}}</span></p>
+                                <p class="infoLabel">Feels like (celsius): <span class="answerDisplay">{{feel}}</span>
+                                </p>
+                            </li>
+                            <hr>
+                            {{/each}}
+                        </template>
                     </ol>
-                    <template id="forecast-list-template">
-                        {{#each forecasts}}
-                        <div id="forecast">
-                            <h4>{{date}}</h4>
-                            <p>{{description}}</p>
-                            <p><img src={{url}}></p>
-                            <p>Humidity: {{humidity}}</p>
-                            <p>UVI: {{UVI}}</p>
-                            <h5>Temperatures</h5>
-                            <p>Max: {{max}} | Min: {{min}}</p>
-                            <p>Feels like (celsius): {{feel}}</p>
-                        </div>
-                        {{/each}}
-                    </template>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -193,6 +186,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Key</h4>
+                    <ion-icon name="heart"></ion-icon>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body modalStyle" id="keyContent"></div>
