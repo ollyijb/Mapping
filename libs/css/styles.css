@@ -47,3 +47,16 @@
     max-height: 70vh !important;
     overflow-y: scroll !important;
 }
+
+.infoLabel {
+    font-weight: bold;
+}
+
+.answerDisplay {
+    font-weight: normal;
+}
+
+.subheading {
+    padding: 5px 0px;
+    font-size: 1.5em;
+}

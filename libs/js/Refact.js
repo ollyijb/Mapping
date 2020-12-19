@@ -1,5 +1,6 @@
 // Default User Position object
 const defaultPosition = { coords: { latitude: 51.5, longitude: -0.10 } };
+const defaultCountryCode = "GB";
 
 // Used to Store User Location Data
 let useObj;
@@ -165,20 +166,44 @@ let tourOptions = {
     className: 'toursPopUp'
 };
 
+
 /*----------------------------- Run ----------------------------*/
+
+
 $(document).ready(function () {
+
+    $.ajax({
+        url: "libs/php/countryCodes.php",
+        type: "POST",
+        dataType: "JSON",
+        success: function (result) {
+            let countries = result.data;
+            let select = $('#select');
+            for (country in countries) {
+                let option = document.createElement('option');
+                option.innerHTML = countries[country].name;
+                option.value = countries[country].code;
+                select.append(option);
+            }
+        }, error: (err) => {
+            console.log(err);
+            reject(err);
+        }
+    });
+
     if (!navigator.geolocation) {
 
-        /*********************** Set Default Map! ***************/
         alert(`Geolocation denied or not supported so rendering default map`);
-        firstAPICall(defaultPosition.coords).then((result) => {
+        getSelectLocationData(defaultCountryCode).then((result) => {
             setBorders(result);
             dropCitiesWrapperFunction(result);
             dropParksWrapper(result);
-            fillCountryWrapper(result);
+            //fillCountryWrapper(result);
             dropRestaurantsWrapper(result);
             dropAttractionsWrapper(result);
             dropHotelsWrapper(result);
+            $('#preloader').fadeOut(200);
+            $('#status').fadeOut(200);
             dataStore.unshift(result);
         }).catch((err) => {
             console.error(err.message);
@@ -187,46 +212,46 @@ $(document).ready(function () {
     } else {
         getUserLocation().then((position) => {
             console.log(position);
-            useUsersLocation(position);
+            dropUsersLocation(position);
 
             useObj = {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
             };
 
-            firstAPICall(useObj).then((result) => {
-                setBorders(result);
-                dropCitiesWrapperFunction(result);
-                dropParksWrapper(result);
-                fillCountryWrapper(result);
-                dropRestaurantsWrapper(result);
-                dropAttractionsWrapper(result);
-                dropHotelsWrapper(result);
-                dataStore.unshift(result);
+            getUserCountryCode(useObj).then((res) => {
+                getSelectLocationData(res).then((result) => {
+                    setBorders(result);
+                    dropCitiesWrapperFunction(result);
+                    dropParksWrapper(result);
+                    //fillCountryWrapper(result);
+                    dropRestaurantsWrapper(result);
+                    dropAttractionsWrapper(result);
+                    dropHotelsWrapper(result);
+                    $('#preloader').fadeOut(200);
+                    $('#status').fadeOut(200);
+                    dataStore.unshift(result);
+                });
             });
 
         }).catch((err) => {
             alert(`Geolocation denied or not supported so rendering default map`);
-            firstAPICall(defaultPosition.coords).then((result) => {
+            getSelectLocationData(defaultCountryCode).then((result) => {
                 setBorders(result);
                 dropCitiesWrapperFunction(result);
                 dropParksWrapper(result);
-                fillCountryWrapper(result);
+                //fillCountryWrapper(result);
                 dropRestaurantsWrapper(result);
                 dropAttractionsWrapper(result);
                 dropHotelsWrapper(result);
-                dataStore.unshift(result);
+                $('#preloader').fadeOut(200);
+                $('#status').fadeOut(200);
             });
         });
     }
 });
 
 /*-------------------------------------- Functions ----------------------------------------------------*/
-
-// Population Formatter
-const formatPopulation = (x) => {
-    return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-};
 
 // Validating attractions
 const attractionValidator = (attraction) => {
@@ -320,29 +345,6 @@ const cityValidator = (city) => {
     return cityObj;
 };
 
-// Filling Country Info
-const countryTemplate = (country) => {
-    let template = `
-    <h4>${country.name}</h4>
-    <p><b>Flag: </b>${country.flag}</p>
-    <p><b>Population: </b>${country.population}</p>
-    <p><b>Capital: </b>${country.capital}</p>
-    <p><b>Calling Code: </b>${country.callingCode}</p>
-    <h5>Currency Info</h5>
-    <p><b>Code: </b>${country.currencyInfo.currencyCode}</p>
-    <p><b>Name: </b>${country.currencyInfo.currencyName}</p>
-    <p><b>Symbol: </b>${country.currencyInfo.currencySybol}</p>
-    <h5>Driving Info</h5>
-    <p><b>Side of Road: </b>${country.drivingSide}</p>
-    <p><b>Speed in: </b>${country.drivingUnits}</p>
-    <h5>Weather</h5>
-    <p><img src=${country.weatherIcon} alt=${country.weatherDescription} ><b>${country.weatherDescription}</b></p>
-    <p><b>Temperature: </b>${country.temperature}</p>
-    <p><b>Sunrise: </b>${country.sunrise}</p>
-    <p><b>Sunset: </b>${country.sunset}</p>`;
-    return template;
-};
-
 // Validating Country Information
 const countryValidator = (result) => {
     let country = {
@@ -376,7 +378,7 @@ const countryValidator = (result) => {
         country.currencyInfo = {
             currencyCode: result.GeoNames.annotations.currency.iso_code,
             currencyName: result.GeoNames.annotations.currency.name,
-            currencySybol: result.GeoNames.annotations.currency.symbol
+            currencySymbol: result.GeoNames.annotations.currency.symbol
         };
     }
     if (!country.callingCode) {
@@ -388,8 +390,8 @@ const countryValidator = (result) => {
     if (!country.currencyInfo.currencyName) {
         country.currencyInfo.currencyCode = "Not found";
     }
-    if (!country.currencyInfo.currencySybol) {
-        country.currencyInfo.currencySybol = "Not found";
+    if (!country.currencyInfo.currencySymbol) {
+        country.currencyInfo.currencySymbol = "Not found";
     }
     if (!country.drivingSide) {
         country.drivingSide = "Not found";
@@ -493,35 +495,21 @@ const dropRestaurantsWrapper = (result) => {
     }
 };
 
-// Fills Country Info 
-const fillCountryWrapper = (result) => {
-    //$('#countryInfo').html(countryTemplate(countryValidator(result)));
-    $('#countryInfoContent').html(countryTemplate(countryValidator(result)));
+// Uses User Location to create marker and set initial map view
+const dropUsersLocation = (position) => {
+    let lat = position.coords.latitude.toFixed(6);
+    let long = position.coords.longitude.toFixed(6);
+    let userCoords = { latitude: lat, longitude: long };
+    let userMarker = L.marker([lat, long], { icon: homeIcon }).addTo(map);
+    let userPopUp = "<h4> You are Here!</h4>";
+    userMarker.bindPopup(userPopUp).addTo(map);
+    map.setView([lat, long], 6);
+    return userCoords;
 };
 
-// Makes the first call to the API's
-const firstAPICall = (coordsObj) => {
-    return new Promise(function (resolve, reject) {
-        $.ajax({
-            url: "libs/php/chain.php",
-            type: "POST",
-            dataType: "JSON",
-            data: {
-                lat: coordsObj.latitude,
-                lng: coordsObj.longitude
-            },
-            success: function (result) {
-                console.log(result);
-                $('#preloader').fadeOut(200);
-                $('#status').fadeOut(200);
-                resolve(result);
-            },
-            error: (err) => {
-                console.log(err);
-                reject(err);
-            }
-        });
-    });
+// Population Formatter
+const formatPopulation = (x) => {
+    return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 };
 
 // Generating Attraction Popup
@@ -604,6 +592,29 @@ const getSelectLocationData = (code) => {
         });
     });
 };
+
+// Returns Users Country Code
+const getUserCountryCode = (coordsObj) => {
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: "libs/php/getUserCountryCode.php",
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                lat: coordsObj.latitude,
+                lng: coordsObj.longitude
+            },
+            success: function (res) {
+                console.log(res);
+                resolve(res);
+            },
+            error: (err) => {
+                console.log(err);
+                reject(err);
+            }
+        });
+    });
+}
 
 // Gets User Location
 const getUserLocation = (options) => {
@@ -692,23 +703,7 @@ const setBorders = (borderObj) => {
     map.fitBounds(border.getBounds());
 };
 
-// Uses User Location to create marker and set initial map view
-const useUsersLocation = (position) => {
-    let lat = position.coords.latitude.toFixed(6);
-    let long = position.coords.longitude.toFixed(6);
-    let userCoords = { latitude: lat, longitude: long };
-    let userMarker = L.marker([lat, long], { icon: homeIcon }).addTo(map);
-    let userPopUp = "<h4> You are Here!</h4>";
-    userMarker.bindPopup(userPopUp).addTo(map);
-    map.setView([lat, long], 6);
-    return userCoords;
-};
-
 /*----------------------------- jQuery Events ----------------------------*/
-
-// Calling php to call json to populate select dropdown menu with countries
-$('#select').load('libs/php/borders.php', function () {
-});
 
 // User Selects Country and Generates a new map with new markers
 $('#select').change(function () {
@@ -718,7 +713,7 @@ $('#select').change(function () {
         setBorders(result);
         dropCitiesWrapperFunction(result);
         dropParksWrapper(result);
-        fillCountryWrapper(result);
+        //fillCountryWrapper(result);
         dropRestaurantsWrapper(result);
         dropAttractionsWrapper(result);
         dropHotelsWrapper(result);
@@ -740,7 +735,7 @@ $('#showCapital').click(function () {
 });
 
 // Fills and shows Week of Weather Forecasts
-$('#weatherForecast').click(function () {
+/*$('#weatherForecast').click(function () {
     let forecasts = dataStore[0].Forecast;
     $('#weatherList').empty();
     $.each(forecasts, function (index, value) {
@@ -755,7 +750,34 @@ $('#weatherForecast').click(function () {
             <p>Feels like: ${value.feels_like.day} Celsius</p>
         </li>`);
     });
+});*/
+
+$('#weatherForecast').click(function () {
+    let forecastList = dataStore[0].Forecast;
+    let forecasts = [];
+
+    for (i = 0; i < forecastList.length; i++) {
+        let weatherObj = {
+            date: new Date(forecastList[i].dt * 1000).toDateString(),
+            description: forecastList[i].weather[0].description,
+            url: `http://openweathermap.org/img/wn/${forecastList[i].weather[0].icon}@2x.png`,
+            humidity: forecastList[i].humidity,
+            UVI: forecastList[i].uvi,
+            max: forecastList[i].temp.max,
+            min: forecastList[i].temp.min,
+            feel: forecastList[i].feels_like.day
+        }
+        forecasts.push(weatherObj);
+    }
+
+    console.log(forecasts);
+    let template = document.getElementById('forecast-list-template').innerHTML;
+    let renderForecast = Handlebars.compile(template);
+    document.getElementById('forecast-list').innerHTML = renderForecast({
+        forecast: forecasts,
+    });
 });
+
 
 // Fills and shows Map key
 $('#showKey').click(function () {
@@ -765,5 +787,77 @@ $('#showKey').click(function () {
     });
 });
 
+$('#showInfo2').click(function () {
+    let country = countryValidator(dataStore[0]);
+    $('#countryName').html(country.name);
+    $('#flag').html(country.flag);
+    $('#population').html(country.population);
+    $('#capital').html(country.capital);
+    $('#callingCode').html(country.callingCode);
+    $('#currencyCode').html(country.currencyInfo.currencyCode);
+    $('#currencyName').html(country.currencyInfo.currencyName);
+    $('#currencySymbol').html(country.currencyInfo.currencySymbol);
+    $('#drivingSide').html(country.drivingSide);
+    $('#drivingUnits').html(country.drivingUnits);
+    $('#weatherOverview').html(country.weatherDescription);
+    $('#weatherTemperature').html(country.temperature);
+    $('#weatherImage').attr("src", country.weatherIcon);
+    $('#weatherImage').attr('alt', country.weatherDescription);
+    $('#sunrise').html(country.sunrise);
+    $('#sunset').html(country.sunset);
 
+});
 
+// Makes the first call to the API's
+/*const firstAPICall = (coordsObj) => {
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: "libs/php/chain.php",
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                lat: coordsObj.latitude,
+                lng: coordsObj.longitude
+            },
+            success: function (result) {
+                console.log(result);
+                $('#preloader').fadeOut(200);
+                $('#status').fadeOut(200);
+                resolve(result);
+            },
+            error: (err) => {
+                console.log(err);
+                reject(err);
+            }
+        });
+    });
+});*/
+
+// Fills Country Info 
+/*const fillCountryWrapper = (result) => {
+    //$('#countryInfo').html(countryTemplate(countryValidator(result)));
+    $('#countryInfoContent').html(countryTemplate(countryValidator(result)));
+};*/
+
+// Filling Country Info
+/*const countryTemplate = (country) => {
+    let template = `
+    <h4>${country.name}</h4>
+    <p><b>Flag: </b>${country.flag}</p>
+    <p><b>Population: </b>${country.population}</p>
+    <p><b>Capital: </b>${country.capital}</p>
+    <p><b>Calling Code: </b>${country.callingCode}</p>
+    <h5>Currency Info</h5>
+    <p><b>Code: </b>${country.currencyInfo.currencyCode}</p>
+    <p><b>Name: </b>${country.currencyInfo.currencyName}</p>
+    <p><b>Symbol: </b>${country.currencyInfo.currencySybol}</p>
+    <h5>Driving Info</h5>
+    <p><b>Side of Road: </b>${country.drivingSide}</p>
+    <p><b>Speed in: </b>${country.drivingUnits}</p>
+    <h5>Weather</h5>
+    <p><img src=${country.weatherIcon} alt=${country.weatherDescription} ><b>${country.weatherDescription}</b></p>
+    <p><b>Temperature: </b>${country.temperature}</p>
+    <p><b>Sunrise: </b>${country.sunrise}</p>
+    <p><b>Sunset: </b>${country.sunset}</p>`;
+    return template;
+};*/

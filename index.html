@@ -44,8 +44,12 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
+                <!--<li class="nav-item">
                     <button id=showInfo class="btn" data-toggle="modal" data-target="#countryInfoModal">Show Country
+                        Info</button>
+                </li>-->
+                <li class="nav-item">
+                    <button id=showInfo2 class="btn" data-toggle="modal" data-target="#countryInfoModal2">Show Country
                         Info</button>
                 </li>
                 <li class="nav-item">
@@ -55,10 +59,11 @@
                     <button id="weatherForecast" class="btn" data-toggle="modal"
                         data-target="#showForecastModal">Weather Forecast</button>
                 </li>
+
                 <li class="nav-item">
                     <select id="select" class="form-control">
-                        <!-- <option value="" disabled selected hidden>Choose a Country</option> -->
-                        <option value="" id=""></option>
+                        <option value="" disabled selected hidden>Choose a Country</option>
+                        <option value="" id="countries"></option>
                     </select>
                 </li>
 
@@ -69,7 +74,7 @@
 
     <!-- Modals -->
     <!-- Forecasts Modal -->
-    <div class="modal" id="showForecastModal">
+    <!--<div class="modal" id="showForecastModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -84,10 +89,55 @@
                 </div>
             </div>
         </div>
+    </div>-->
+
+    <!-- Forecasts Modal -->
+    <div class="modal" id="showForecastModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Weather Forecasts</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div id="weatherInfo" class="modal-body modalStyle">
+                    <ol id=weatherList>
+                        <li class="forecastItem">
+                            <h4 id="date"></h4>
+                            <p><img id="forecastImage"></p>
+                            <p id="forecastDescription"></p>
+                            <p class="infoLabel">Humidity: <span id="forecastHumidity" class="answerDisplay"></span></p>
+                            <p class="infoLabel">UVI: <span id="forecastUVI" class="answerDisplay"></span></p>
+                            <h5 class="subheading">Temperatures</h5>
+                            <p class="infoLabel">Max: <span id="forecastMax" class="answerDisplay"></span> | Min: <span
+                                    id="forecastMin" class="answerDisplay"></span></p>
+                            <p class="infoLabel">Feels like (celsius): <span id="forecastFeel"
+                                    class="answerDisplay"></span></p>
+                        </li>
+                    </ol>
+                    <template id="forecast-list-template">
+                        {{#each forecasts}}
+                        <div id="forecast">
+                            <h4>{{date}}</h4>
+                            <p>{{description}}</p>
+                            <p><img src={{url}}></p>
+                            <p>Humidity: {{humidity}}</p>
+                            <p>UVI: {{UVI}}</p>
+                            <h5>Temperatures</h5>
+                            <p>Max: {{max}} | Min: {{min}}</p>
+                            <p>Feels like (celsius): {{feel}}</p>
+                        </div>
+                        {{/each}}
+                    </template>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Country Info Modal -->
-    <div class="modal" id="countryInfoModal">
+    <!--<div class="modal" id="countryInfoModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -95,6 +145,41 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body modalStyle" id="countryInfoContent"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <!-- Country Info Modal -->
+    <div class="modal" id="countryInfoModal2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Country Info</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body modalStyle" id="countryInfoContent">
+                    <h4 id="countryName"></h4>
+                    <p class="infoLabel">Flag: <span id="flag" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Population: <span id="population" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Capital: <span id="capital" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Calling Code: <span id="callingCode" class="answerDisplay"></span></p>
+                    <h5 class="subheading">Currency Info</h5>
+                    <p class="infoLabel">Currency Code: <span id="currencyCode" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Currency Name: <span id="currencyName" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Currency Symbol: <span id="currencySymbol" class="answerDisplay"></span></p>
+                    <h5 class="subheading">Driving Info</h5>
+                    <p class="infoLabel">Drive on the: <span id="drivingSide" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Speed In: <span id="drivingUnits" class="answerDisplay"></span></p>
+                    <h5 class="subheading">Weather</h5>
+                    <p><img id="weatherImage"></p>
+                    <p class="infoLabel">Overview: <span id="weatherOverview" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Temperature: <span id="weatherTemperature" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Sunrise: <span id="sunrise" class="answerDisplay"></span></p>
+                    <p class="infoLabel">Sunset: <span id="sunset" class="answerDisplay"></span></p>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
@@ -132,6 +217,7 @@
     <!-- Bootstrap JS -->
     <script src="libs/Src/Bootstrap/bootstrap.bundle.min.js"></script>
     <!-- Leaflet JS -->
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script src="libs/Resources/dist/leaflet.awesome-markers.js"></script>
     <!-- Leaflet Spin -->
     <script src="libs/Src/Leaflet.Spin-1.1.2/spin.js"></script>
