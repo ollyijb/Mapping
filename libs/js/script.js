@@ -221,7 +221,7 @@ $(document).ready(function () {
             };
 
             getUserCountryCode(useObj).then((res) => {
-                getSelectLocationData(res).then((result) => {
+                getSelectLocationData(res.data).then((result) => {
                     setBorders(result);
                     dropCitiesWrapperFunction(result);
                     dropParksWrapper(result);
@@ -426,7 +426,7 @@ const countryValidator = (result) => {
 
 // Adds Attractions to Map
 const dropAttractionsWrapper = (result) => {
-    let attractions = result.CapitalTopAttractions;
+    let attractions = result.CapitalTopAttractions.data;
     if (!attractions) {
         return;
     } else {
@@ -440,7 +440,7 @@ const dropAttractionsWrapper = (result) => {
 
 // Adds Cities to Map
 const dropCitiesWrapperFunction = (result) => {
-    let Cities = result.Cities;
+    let Cities = result.Cities.data;
     if (!Cities) {
         return;
     } else {
@@ -454,7 +454,7 @@ const dropCitiesWrapperFunction = (result) => {
 
 // Adds Hotels to Map
 const dropHotelsWrapper = (result) => {
-    let hotels = result.CapitalHotels;
+    let hotels = result.CapitalHotels.data;
     if (!hotels) {
         return;
     } else {
@@ -468,7 +468,7 @@ const dropHotelsWrapper = (result) => {
 
 // Adds Parks to Map
 const dropParksWrapper = (result) => {
-    let parks = result.NationalParks;
+    let parks = result.NationalParks.data;
     if (!parks) {
         return;
     } else {
@@ -482,7 +482,7 @@ const dropParksWrapper = (result) => {
 
 // Adds Restaurants to Map
 const dropRestaurantsWrapper = (result) => {
-    let restaurantlist = result.CapitalRestaurants;
+    let restaurantlist = result.CapitalRestaurants.data;
     if (!restaurantlist) {
         return;
     } else {
@@ -570,7 +570,7 @@ const getSelectLocationData = (code) => {
         //$('#status').show();
         map.spin(true);
         $.ajax({
-            url: "libs/php/selectData.php",
+            url: "libs/php/getSelectedCountryData.php",
             type: "POST",
             dataType: "JSON",
             data: {

@@ -13,7 +13,16 @@
     // Storing country Name and Code to variables
     $countryCode = $decode['countryCode'];
 
-    $output = $countryCode;
+    // Validating the request and defining the object to be returned
+    if (is_null($countryCode)) {
+        $output['status']['code'] = '404';
+        $output['status']['message'] = 'not found';
+    } else {
+        $output['data'] = $countryCode;
+        $output['status']['code'] = '200';
+        $output['status']['message'] = 'ok';
+    }
+
 
     header('Content-Type: application/json; charset=UTF-8');
 
