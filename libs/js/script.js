@@ -760,6 +760,32 @@ $('#weatherForecast').click(function () {
     });
 });
 
+/*let weatherHand = $('#weatherBtn').click(function () {
+    let forecastList = dataStore[0].Forecast;
+    let forecasts = [];
+
+    for (i = 0; i < forecastList.length; i++) {
+        let weatherObj = {
+            date: new Date(forecastList[i].dt * 1000).toDateString(),
+            description: forecastList[i].weather[0].description,
+            url: `http://openweathermap.org/img/wn/${forecastList[i].weather[0].icon}@2x.png`,
+            humidity: forecastList[i].humidity,
+            UVI: forecastList[i].uvi,
+            max: forecastList[i].temp.max,
+            min: forecastList[i].temp.min,
+            feel: forecastList[i].feels_like.day
+        }
+        forecasts.push(weatherObj);
+    }
+
+    console.log(forecasts);
+    let template = document.getElementById('forecast-list-template').innerHTML;
+    let renderForecast = Handlebars.compile(template);
+    document.getElementById('weatherList').innerHTML = renderForecast({
+        forecasts: forecasts,
+    });
+});*/
+
 $('#showInfo2').click(function () {
     let country = countryValidator(dataStore[0]);
     $('#countryName').html(country.name);
@@ -780,6 +806,46 @@ $('#showInfo2').click(function () {
     $('#sunset').html(country.sunset);
 
 });
+
+L.easyButton('icon ion-home', function () {
+    if ($('#showCapital').html() == 'Show Capital') {
+        map.setView([dataStore[0].capitalCoords.latitude, dataStore[0].capitalCoords.longitude], 11);
+        $('.navbar-collapse').collapse('hide');
+        $('#showCapital').html('Back to Country');
+    } else {
+        setBorders(dataStore[0]);
+        $('#showCapital').html('Show Capital');
+        $('.navbar-collapse').collapse('hide');
+    }
+}).addTo(map);
+
+L.easyButton('icon ion-key', function () {
+    $('#showKey');
+}).addTo(map);
+
+L.easyButton('icon ion-information', function () {
+    $('#countryInfoModal2').toggle();
+}).addTo(map);
+
+/*var keyToggle = L.easyButton({
+    id: 'infoButton',
+    title: 'Country Info',
+    icon: 'icon ion-information',
+    states: [{
+        stateName: 'clicked',
+        onClick: function (control) {
+            $('#showKey').show();
+            control.state('unclicked');
+        },
+        stateName: 'unclicked',
+        onClick: function (control) {
+            $('#showKey').hide();
+            control.state('clicked');
+        },
+    }]
+});
+
+keyToggle.addTo(map);*/
 
 // Fills and shows Map key
 /*$('#showKey').click(function () {
