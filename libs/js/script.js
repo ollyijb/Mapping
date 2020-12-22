@@ -824,7 +824,24 @@ L.easyButton('icon ion-key', function () {
 }).addTo(map);
 
 L.easyButton('icon ion-information', function () {
-    $('#countryInfoModal2').toggle();
+    let country = countryValidator(dataStore[0]);
+    $('#countryName').html(country.name);
+    $('#flag').html(country.flag);
+    $('#population').html(country.population);
+    $('#capital').html(country.capital);
+    $('#callingCode').html(country.callingCode);
+    $('#currencyCode').html(country.currencyInfo.currencyCode);
+    $('#currencyName').html(country.currencyInfo.currencyName);
+    $('#currencySymbol').html(country.currencyInfo.currencySymbol);
+    $('#drivingSide').html(country.drivingSide);
+    $('#drivingUnits').html(country.drivingUnits);
+    $('#weatherOverview').html(country.weatherDescription);
+    $('#weatherTemperature').html(country.temperature);
+    $('#weatherImage').attr("src", country.weatherIcon);
+    $('#weatherImage').attr('alt', country.weatherDescription);
+    $('#sunrise').html(country.sunrise);
+    $('#sunset').html(country.sunset);
+    $('#countryInfoModal2').show();
 }).addTo(map);
 
 /*var keyToggle = L.easyButton({
