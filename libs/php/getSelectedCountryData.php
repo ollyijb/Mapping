@@ -12,13 +12,14 @@
     $decode = json_decode($result,true);
 
     // Storing useful part of response under GeoInfo
-    if (!$decode['status']) {
+   /* if (!$decode['status']) {
     $output['GeoInfo'] = $decode['geonames'][0];
     $output['GeoInfo']['status']['message'] = 'ok';
     $output['GeoInfo']['status']['executedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
     } else {
         $output['GeoInfo']['status']['message'] = $decode['status']['message'];
-    }
+    }*/
+    $output['GeoInfo'] = $decode['geonames'][0];
 
     // Storing Capital city so it can be passed into weather API for current weather
     $city = $decode['geonames'][0]['capital'];

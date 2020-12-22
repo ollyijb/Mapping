@@ -721,7 +721,7 @@ $('#select').change(function () {
 });
 
 // Adding functionality to the show capital button
-$('#showCapital').click(function () {
+/*$('#showCapital').click(function () {
     if ($('#showCapital').html() == 'Show Capital') {
         map.setView([dataStore[0].capitalCoords.latitude, dataStore[0].capitalCoords.longitude], 11);
         $('.navbar-collapse').collapse('hide');
@@ -731,10 +731,10 @@ $('#showCapital').click(function () {
         $('#showCapital').html('Show Capital');
         $('.navbar-collapse').collapse('hide');
     }
-});
+});*/
 
 // Fills and shows weather forecast list using handlebars template
-$('#weatherForecast').click(function () {
+/*$('#weatherForecast').click(function () {
     let forecastList = dataStore[0].Forecast;
     let forecasts = [];
 
@@ -758,7 +758,7 @@ $('#weatherForecast').click(function () {
     document.getElementById('weatherList').innerHTML = renderForecast({
         forecasts: forecasts,
     });
-});
+});*/
 
 /*let weatherHand = $('#weatherBtn').click(function () {
     let forecastList = dataStore[0].Forecast;
@@ -786,7 +786,7 @@ $('#weatherForecast').click(function () {
     });
 });*/
 
-$('#showInfo2').click(function () {
+/*$('#showInfo2').click(function () {
     let country = countryValidator(dataStore[0]);
     $('#countryName').html(country.name);
     $('#flag').html(country.flag);
@@ -805,9 +805,9 @@ $('#showInfo2').click(function () {
     $('#sunrise').html(country.sunrise);
     $('#sunset').html(country.sunset);
 
-});
+});*/
 
-L.easyButton('icon ion-home', function () {
+/*L.easyButton('icon ion-home', function () {
     if ($('#showCapital').html() == 'Show Capital') {
         map.setView([dataStore[0].capitalCoords.latitude, dataStore[0].capitalCoords.longitude], 11);
         $('.navbar-collapse').collapse('hide');
@@ -817,13 +817,35 @@ L.easyButton('icon ion-home', function () {
         $('#showCapital').html('Show Capital');
         $('.navbar-collapse').collapse('hide');
     }
+}).addTo(map);*/
+
+L.easyButton({
+    id: 'viewChanger',
+    states: [{
+        stateName: 'show-capital',
+        icon: 'icon ion-location',
+        title: 'Show Capital',
+        onClick: function (control) {
+            map.setView([dataStore[0].capitalCoords.latitude, dataStore[0].capitalCoords.longitude], 11);
+            control.state('show-country');
+        }
+    }, {
+        icon: 'icon ion-home',
+        stateName: 'show-country',
+        title: 'Show Country',
+        onClick: function (control) {
+            setBorders(dataStore[0]);
+            control.state('show-capital');
+        }
+    }]
 }).addTo(map);
+
 
 L.easyButton('icon ion-key', function () {
-    $('#showKey');
+    $('#keyModal').modal();
 }).addTo(map);
 
-L.easyButton('icon ion-information', function () {
+L.easyButton('icon ion-information', function (btn) {
     let country = countryValidator(dataStore[0]);
     $('#countryName').html(country.name);
     $('#flag').html(country.flag);
@@ -841,9 +863,34 @@ L.easyButton('icon ion-information', function () {
     $('#weatherImage').attr('alt', country.weatherDescription);
     $('#sunrise').html(country.sunrise);
     $('#sunset').html(country.sunset);
-    $('#countryInfoModal2').show();
+    $('#countryInfoModal2').modal();
 }).addTo(map);
 
+L.easyButton('icon ion-key', function () {
+    let forecastList = dataStore[0].Forecast;
+    let forecasts = [];
+
+    for (i = 0; i < forecastList.length; i++) {
+        let weatherObj = {
+            date: new Date(forecastList[i].dt * 1000).toDateString(),
+            description: forecastList[i].weather[0].description,
+            url: `http://openweathermap.org/img/wn/${forecastList[i].weather[0].icon}@2x.png`,
+            humidity: forecastList[i].humidity,
+            UVI: forecastList[i].uvi,
+            max: forecastList[i].temp.max,
+            min: forecastList[i].temp.min,
+            feel: forecastList[i].feels_like.day
+        }
+        forecasts.push(weatherObj);
+    }
+
+    //console.log(forecasts);
+    let template = $('#forecast-list-template').html();
+    let renderForecast = Handlebars.compile(template);
+    $('#weatherList').innerHTML = renderForecast({
+        forecasts: forecasts,
+    });
+}).addTo(map);
 /*var keyToggle = L.easyButton({
     id: 'infoButton',
     title: 'Country Info',
