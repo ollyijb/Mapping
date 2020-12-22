@@ -5,6 +5,9 @@ const defaultCountryCode = "GB";
 // Used to Store User Location Data
 let useObj;
 
+// Handlebars compiler
+let renderForecast = Handlebars.compile($('#forecast-list-template').html());
+
 // Stores data received from API Routines
 let dataStore = [];
 
@@ -243,6 +246,7 @@ $(document).ready(function () {
                 dropRestaurantsWrapper(result);
                 dropAttractionsWrapper(result);
                 dropHotelsWrapper(result);
+                forecastFiller(result);
                 $('#preloader').fadeOut(200);
                 $('#status').fadeOut(200);
             });
@@ -712,7 +716,6 @@ $('#select').change(function () {
         setBorders(result);
         dropCitiesWrapperFunction(result);
         dropParksWrapper(result);
-        //fillCountryWrapper(result);
         dropRestaurantsWrapper(result);
         dropAttractionsWrapper(result);
         dropHotelsWrapper(result);
@@ -720,106 +723,7 @@ $('#select').change(function () {
     });
 });
 
-// Adding functionality to the show capital button
-/*$('#showCapital').click(function () {
-    if ($('#showCapital').html() == 'Show Capital') {
-        map.setView([dataStore[0].capitalCoords.latitude, dataStore[0].capitalCoords.longitude], 11);
-        $('.navbar-collapse').collapse('hide');
-        $('#showCapital').html('Back to Country');
-    } else {
-        setBorders(dataStore[0]);
-        $('#showCapital').html('Show Capital');
-        $('.navbar-collapse').collapse('hide');
-    }
-});*/
-
-// Fills and shows weather forecast list using handlebars template
-/*$('#weatherForecast').click(function () {
-    let forecastList = dataStore[0].Forecast;
-    let forecasts = [];
-
-    for (i = 0; i < forecastList.length; i++) {
-        let weatherObj = {
-            date: new Date(forecastList[i].dt * 1000).toDateString(),
-            description: forecastList[i].weather[0].description,
-            url: `http://openweathermap.org/img/wn/${forecastList[i].weather[0].icon}@2x.png`,
-            humidity: forecastList[i].humidity,
-            UVI: forecastList[i].uvi,
-            max: forecastList[i].temp.max,
-            min: forecastList[i].temp.min,
-            feel: forecastList[i].feels_like.day
-        }
-        forecasts.push(weatherObj);
-    }
-
-    console.log(forecasts);
-    let template = document.getElementById('forecast-list-template').innerHTML;
-    let renderForecast = Handlebars.compile(template);
-    document.getElementById('weatherList').innerHTML = renderForecast({
-        forecasts: forecasts,
-    });
-});*/
-
-/*let weatherHand = $('#weatherBtn').click(function () {
-    let forecastList = dataStore[0].Forecast;
-    let forecasts = [];
-
-    for (i = 0; i < forecastList.length; i++) {
-        let weatherObj = {
-            date: new Date(forecastList[i].dt * 1000).toDateString(),
-            description: forecastList[i].weather[0].description,
-            url: `http://openweathermap.org/img/wn/${forecastList[i].weather[0].icon}@2x.png`,
-            humidity: forecastList[i].humidity,
-            UVI: forecastList[i].uvi,
-            max: forecastList[i].temp.max,
-            min: forecastList[i].temp.min,
-            feel: forecastList[i].feels_like.day
-        }
-        forecasts.push(weatherObj);
-    }
-
-    console.log(forecasts);
-    let template = document.getElementById('forecast-list-template').innerHTML;
-    let renderForecast = Handlebars.compile(template);
-    document.getElementById('weatherList').innerHTML = renderForecast({
-        forecasts: forecasts,
-    });
-});*/
-
-/*$('#showInfo2').click(function () {
-    let country = countryValidator(dataStore[0]);
-    $('#countryName').html(country.name);
-    $('#flag').html(country.flag);
-    $('#population').html(country.population);
-    $('#capital').html(country.capital);
-    $('#callingCode').html(country.callingCode);
-    $('#currencyCode').html(country.currencyInfo.currencyCode);
-    $('#currencyName').html(country.currencyInfo.currencyName);
-    $('#currencySymbol').html(country.currencyInfo.currencySymbol);
-    $('#drivingSide').html(country.drivingSide);
-    $('#drivingUnits').html(country.drivingUnits);
-    $('#weatherOverview').html(country.weatherDescription);
-    $('#weatherTemperature').html(country.temperature);
-    $('#weatherImage').attr("src", country.weatherIcon);
-    $('#weatherImage').attr('alt', country.weatherDescription);
-    $('#sunrise').html(country.sunrise);
-    $('#sunset').html(country.sunset);
-
-});*/
-
-/*L.easyButton('icon ion-home', function () {
-    if ($('#showCapital').html() == 'Show Capital') {
-        map.setView([dataStore[0].capitalCoords.latitude, dataStore[0].capitalCoords.longitude], 11);
-        $('.navbar-collapse').collapse('hide');
-        $('#showCapital').html('Back to Country');
-    } else {
-        setBorders(dataStore[0]);
-        $('#showCapital').html('Show Capital');
-        $('.navbar-collapse').collapse('hide');
-    }
-}).addTo(map);*/
-
-L.easyButton({
+let viewBtn = L.easyButton({
     id: 'viewChanger',
     states: [{
         stateName: 'show-capital',
@@ -838,14 +742,14 @@ L.easyButton({
             control.state('show-capital');
         }
     }]
-}).addTo(map);
+});
 
 
-L.easyButton('icon ion-key', function () {
+let keyBtn = L.easyButton('icon ion-key', function () {
     $('#keyModal').modal();
-}).addTo(map);
+});
 
-L.easyButton('icon ion-information', function (btn) {
+let infoBtn = L.easyButton('icon ion-information', function (btn) {
     let country = countryValidator(dataStore[0]);
     $('#countryName').html(country.name);
     $('#flag').html(country.flag);
@@ -864,9 +768,10 @@ L.easyButton('icon ion-information', function (btn) {
     $('#sunrise').html(country.sunrise);
     $('#sunset').html(country.sunset);
     $('#countryInfoModal2').modal();
-}).addTo(map);
+});
 
-L.easyButton('icon ion-key', function () {
+let weatherBtn = L.easyButton('icon ion-cloud', function () {
+    $('#showForecastModal').modal();
     let forecastList = dataStore[0].Forecast;
     let forecasts = [];
 
@@ -883,110 +788,11 @@ L.easyButton('icon ion-key', function () {
         }
         forecasts.push(weatherObj);
     }
-
-    //console.log(forecasts);
-    let template = $('#forecast-list-template').html();
-    let renderForecast = Handlebars.compile(template);
-    $('#weatherList').innerHTML = renderForecast({
-        forecasts: forecasts,
-    });
-}).addTo(map);
-/*var keyToggle = L.easyButton({
-    id: 'infoButton',
-    title: 'Country Info',
-    icon: 'icon ion-information',
-    states: [{
-        stateName: 'clicked',
-        onClick: function (control) {
-            $('#showKey').show();
-            control.state('unclicked');
-        },
-        stateName: 'unclicked',
-        onClick: function (control) {
-            $('#showKey').hide();
-            control.state('clicked');
-        },
-    }]
+    $('#weatherList').html(renderForecast({ forecasts: forecasts }));
 });
 
-keyToggle.addTo(map);*/
+let buttons = [
+    weatherBtn, infoBtn, keyBtn, viewBtn
+];
 
-// Fills and shows Map key
-/*$('#showKey').click(function () {
-    $.each(keyTerms, function (index, value) {
-        $('#keyContent').append(`
-        <h4><svg width="50" height="50"><circle cx="25" cy="25" r="20" stroke="black" fill="${keyColours[index]}"></svg> : ${value}</h4>`);
-    });
-});*/
-
-// Makes the first call to the API's
-/*const firstAPICall = (coordsObj) => {
-    return new Promise(function (resolve, reject) {
-        $.ajax({
-            url: "libs/php/chain.php",
-            type: "POST",
-            dataType: "JSON",
-            data: {
-                lat: coordsObj.latitude,
-                lng: coordsObj.longitude
-            },
-            success: function (result) {
-                console.log(result);
-                $('#preloader').fadeOut(200);
-                $('#status').fadeOut(200);
-                resolve(result);
-            },
-            error: (err) => {
-                console.log(err);
-                reject(err);
-            }
-        });
-    });
-});*/
-
-// Fills Country Info 
-/*const fillCountryWrapper = (result) => {
-    //$('#countryInfo').html(countryTemplate(countryValidator(result)));
-    $('#countryInfoContent').html(countryTemplate(countryValidator(result)));
-};*/
-
-// Filling Country Info
-/*const countryTemplate = (country) => {
-    let template = `
-    <h4>${country.name}</h4>
-    <p><b>Flag: </b>${country.flag}</p>
-    <p><b>Population: </b>${country.population}</p>
-    <p><b>Capital: </b>${country.capital}</p>
-    <p><b>Calling Code: </b>${country.callingCode}</p>
-    <h5>Currency Info</h5>
-    <p><b>Code: </b>${country.currencyInfo.currencyCode}</p>
-    <p><b>Name: </b>${country.currencyInfo.currencyName}</p>
-    <p><b>Symbol: </b>${country.currencyInfo.currencySybol}</p>
-    <h5>Driving Info</h5>
-    <p><b>Side of Road: </b>${country.drivingSide}</p>
-    <p><b>Speed in: </b>${country.drivingUnits}</p>
-    <h5>Weather</h5>
-    <p><img src=${country.weatherIcon} alt=${country.weatherDescription} ><b>${country.weatherDescription}</b></p>
-    <p><b>Temperature: </b>${country.temperature}</p>
-    <p><b>Sunrise: </b>${country.sunrise}</p>
-    <p><b>Sunset: </b>${country.sunset}</p>`;
-    return template;
-};*/
-
-// Fills and shows Week of Weather Forecasts
-/*$('#weatherForecast').click(function () {
-    let forecasts = dataStore[0].Forecast;
-    $('#weatherList').empty();
-    $.each(forecasts, function (index, value) {
-        $('#weatherList').append(`
-        <li>
-            <h4>${new Date(value.dt * 1000).toDateString()}</h4>
-            <p><img src="http://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png" alt="${value.weather[0].description}">${value.weather[0].description}</p>
-            <p>Humidity: ${value.humidity}</p>
-            <p>UVI: ${value.uvi}</p>
-            <h5>Temperatures</h5>
-            <p>Max: ${value.temp.max} Celsius | Min: ${value.temp.min} Celsius</p>
-            <p>Feels like: ${value.feels_like.day} Celsius</p>
-        </li>`);
-    });
-});*/
+L.easyBar(buttons).addTo(map);
