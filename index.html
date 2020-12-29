@@ -36,41 +36,6 @@
         </div>
     </div>
 
-    <!-- Add in a Bootstrap navbar with buttons and a select of countries -->
-    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light text-center">
-        <a class="navbar-brand" href="#">Navbar</a>
-        <button class="navbar-toggler" id="navDrop" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <button id=showInfo2 class="btn" data-toggle="modal" data-target="#countryInfoModal2">Show Country
-                        Info</button>
-                </li>
-                <li class="nav-item">
-                    <button id=showCapital class="btn">Show Capital</button>
-                </li>
-                <li class="nav-item">
-                    <button id="weatherForecast" class="btn" data-toggle="modal"
-                        data-target="#showForecastModal">Weather Forecast</button>
-                </li>
-
-                <li class="nav-item">
-                    <select id="select" class="form-control">
-                        <option value="" disabled selected hidden>Choose a Country</option>
-                        <option value="" id="countries"></option>
-                    </select>
-                </li>
-
-            </ul>
-
-        </div>
-    </nav>
-
     <!-- Modals -->
 
     <!-- Forecasts Modal -->
@@ -204,9 +169,10 @@
 
     <!-- Map Container -->
     <div id="mapid" class="container-fluid">
-        <!--<div id="keyContainer" class="container">
-            <button id=showKey type="button" class="btn" data-toggle="modal" data-target="#keyModal">Key</button>
-        </div>-->
+        <select id="select" class="form-control">
+            <option value="" disabled selected hidden>Choose a Country</option>
+            <option value="" id="countries"></option>
+        </select>
     </div>
 
     <!-- jQuery -->

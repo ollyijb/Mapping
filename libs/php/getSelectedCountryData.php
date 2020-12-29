@@ -12,13 +12,13 @@
     $decode = json_decode($result,true);
 
     // Storing useful part of response under GeoInfo
-   /* if (!$decode['status']) {
+    if (!$decode['status']) {
     $output['GeoInfo'] = $decode['geonames'][0];
     $output['GeoInfo']['status']['message'] = 'ok';
     $output['GeoInfo']['status']['executedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
     } else {
         $output['GeoInfo']['status']['message'] = $decode['status']['message'];
-    }*/
+    }
     $output['GeoInfo'] = $decode['geonames'][0];
 
     // Storing Capital city so it can be passed into weather API for current weather
@@ -42,20 +42,7 @@
     $output['Borders'] = $filtered['geometry'];
     $output['Borders']['status']['executedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
 
-    /*// Getting Country Info from GeoNames
-    $key = "92c6ebcaed0b46eaa17eff05b0dc0a1e";
-    $url = "https://api.opencagedata.com/geocode/v1/json?q=" . $_REQUEST['countryCode'] . "&key=" . $key . "&pretty=1";
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl);
-    $decode = json_decode($result,true);	
-    
-    $output['GeoNames'] = $decode['results'][0];*/
-    
-
+    // Modifying the data so it can be used by API's
     if (stripos($countryName, ' ')) {
         $country = str_replace(' ', '_', $countryName);
     } elseif ($countryName == 'Bahamas') {
@@ -134,77 +121,71 @@
     $cityLat = $decode['results'][0]['coordinates']['latitude'];
     $cityLon = $decode['results'][0]['coordinates']['longitude'];
 
-    // Best Places in Capital
+    // Setting up some asynchronous API Calls
+
+    $attractions_url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=topattractions&count=10&account=' . $account. '&token=' . $token;
+    $restaurants_url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=cuisine&count=10&account=' . $account. '&token=' . $token;
+    $hotels_url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=hotels&count=10&account=' . $account. '&token=' . $token;
+    $weather_key = 'cfdde55e3e994683d2f49995d1215fed';
+    $weather_url = 'api.openweathermap.org/data/2.5/weather?lat='. $cityLat . '&lon=' . $cityLon . '&units=metric&appid=' . $weather_key;
+    $forecast_key = '2ae19805acbcf4bbe1649d5d2635a30e';
+    $forecast_url = 'https://api.openweathermap.org/data/2.5/onecall?lat=' . $cityLat . '&lon=' . $cityLon . '&units=metric&exclude=current,minutely,hourly&appid=' . $forecast_key;
+    
     $executionStartTime = microtime(true);
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=topattractions&count=10&account=' . $account. '&token=' . $token;
+    $attractions = curl_init($attractions_url);
+    $restaurants = curl_init($restaurants_url);
+    $hotels = curl_init($hotels_url);
+    $weather = curl_init($weather_url);
+    $forecast = curl_init($forecast_url);
 
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl); 
-    $decode = json_decode($result,true);
+    curl_setopt($attractions, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($attractions, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($restaurants, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($restaurants, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($hotels, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($hotels, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($weather, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($weather, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($forecast, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($forecast, CURLOPT_RETURNTRANSFER, true);
 
+    $mh = curl_multi_init();
+
+    curl_multi_add_handle($mh, $attractions);
+    curl_multi_add_handle($mh, $restaurants);
+    curl_multi_add_handle($mh, $hotels);
+    curl_multi_add_handle($mh, $weather);
+    curl_multi_add_handle($mh, $forecast);
+
+    $running = null;
+    do {
+        curl_multi_exec($mh, $running);
+    } while ($running);
+
+    curl_multi_remove_handle($mh, $attractions);
+    curl_multi_remove_handle($mh, $restaurants);
+    curl_multi_remove_handle($mh, $hotels);
+    curl_multi_remove_handle($mh, $weather);
+    curl_multi_remove_handle($mh, $forecast);
+    curl_multi_close($mh);
+
+    // Outputing Asynchronous API calls
+    $attractions_response = curl_multi_getcontent($attractions);
+    $decode = json_decode($attractions_response,true);
     $output['CapitalTopAttractions']['data'] = $decode['results'];
-    $output['CapitalTopAttractions']['status']['executedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
-
-    // Top Restaurants in Capital
-    $executionStartTime = microtime(true);
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=cuisine&count=10&account=' . $account. '&token=' . $token;
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl); 
-    $decode = json_decode($result,true);
-
+    $restaurants_response = curl_multi_getcontent($restaurants);
+    $decode = json_decode($restaurants_response,true);
     $output['CapitalRestaurants']['data'] = $decode['results'];
-    $output['CapitalRestaurants']['status']['executedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
-
-    // Top Hotels in Capital
-    $executionStartTime = microtime(true);
-    $url = 'https://www.triposo.com/api/20201111/poi.json?location_id=' . $cityID . '&tag_labels=hotels&count=10&account=' . $account. '&token=' . $token;
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl); 
-    $decode = json_decode($result,true);
-
+    $hotels_response = curl_multi_getcontent($hotels);
+    $decode = json_decode($hotels_response,true);
     $output['CapitalHotels']['data'] = $decode['results'];
-    $output['CapitalHotels']['status']['executedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
-
-    // API Call to Open Weather to get current Weather
-
-    $key = 'cfdde55e3e994683d2f49995d1215fed';
-    $url = 'api.openweathermap.org/data/2.5/weather?lat='. $cityLat . '&lon=' . $cityLon . '&units=metric&appid=' . $key;
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl); 
-    $decode = json_decode($result,true);
-
+    $weather_response = curl_multi_getcontent($weather);
+    $decode = json_decode($weather_response,true);
     $output['CurrentWeather'] = $decode;
-
-
-    // API Call to Open Weather to get Week of Forecasts
-
-    $key = '2ae19805acbcf4bbe1649d5d2635a30e';
-    $url = 'https://api.openweathermap.org/data/2.5/onecall?lat=' . $cityLat . '&lon=' . $cityLon . '&units=metric&exclude=current,minutely,hourly&appid=' . $key;
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl); 
-    $decode = json_decode($result,true);
-
+    $forecast_response = curl_multi_getcontent($forecast);
+    $decode = json_decode($forecast_response,true);
     $output['Forecast'] = $decode['daily'];
-
+    $output['multiRequest']['status']['executedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
 
     header('Content-Type: application/json; charset=UTF-8');
 

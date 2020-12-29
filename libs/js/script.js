@@ -138,13 +138,13 @@ let hotelIcon = L.AwesomeMarkers.icon({
 // Setting Popup options for City
 let cityOptions = {
     keepInView: true,
-    className: 'CitiesPopUp'
+    className: 'citiesPopUp'
 };
 
 // Setting Popup options for Park
 let parkOptions = {
     keepInView: true,
-    className: 'ParksPopUp'
+    className: 'parksPopUp'
 };
 
 // Setting Popup options for Restaurant
@@ -512,7 +512,7 @@ const dropUsersLocation = (position) => {
 
 // Population Formatter
 const formatPopulation = (x) => {
-    return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+    return x.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 };
 
 // Generating Attraction Popup
@@ -570,8 +570,8 @@ const generateRestaurantPopUp = (restaurant) => {
 // AJAX Routine for users selected country in Select Box
 const getSelectLocationData = (code) => {
     return new Promise(function (resolve, reject) {
-        //$('#preloader').show();
-        //$('#status').show();
+        $('#preloader').fadeOut(200);
+        $('#status').fadeOut(200);
         map.spin(true);
         $.ajax({
             url: "libs/php/getSelectedCountryData.php",
@@ -583,8 +583,6 @@ const getSelectLocationData = (code) => {
             success: function (result) {
                 console.log(result);
                 resolve(result);
-                //$('#preloader').fadeOut(200);
-                //$('#status').fadeOut(200);
                 $('.navbar-collapse').collapse('hide');
                 map.spin(false);
             },

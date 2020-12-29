@@ -22,23 +22,18 @@
     /*display: none;*/
 }
 
-#mapid { 
-    height: calc(100vh - 56px); 
-    z-index: 1;
-    position: relative;
-} 
 
-#showKey {
-    z-index: 9000; 
-    margin: 2vw;
-    position: absolute;
-    bottom: 10vw;
-    left: 2vw;
-    background-color: white;
+#mapid {
+    height: 100vh;
 }
 
-#showKey:hover {
-    background-color: blueviolet;
+#select {
+    z-index: 9999999;
+    position: absolute;
+    left: 12vh;
+    top: 1vw;
+    display: inline-block;
+    width: auto;
 }
 
 .leaflet-popup {max-width: 250px;}
