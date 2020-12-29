@@ -523,7 +523,7 @@ const generateAttractionPopUp = (attraction) => {
     <p>Price: ${attraction.pricing.price} Currency: ${attraction.pricing.currency}</p>
     <p>${attraction.snippet}</p>
     <a href="${attraction.url}" target="_blank">${attraction.text}</a>
-    <img src="${attraction.image}" alt="${attraction.alt}">`
+    <img src="${attraction.image}" height="128" width="192" alt="${attraction.alt}">`
     return attractionTemplate;
 };
 
@@ -535,7 +535,7 @@ const generateCitiesPopUp = (city) => {
     <p>Score: ${city.score}</p>
     <p>Population: ${formatPopulation(city.population)}</p>
     <a href="${city.url}" target="_blank">Click to Learn More about ${city.name}</a>
-    <img src="${city.image}" alt="${city.alt} image">`;
+    <img src="${city.image}" height="128" width="192" alt="${city.alt} image">`;
     return cityTemplate;
 };
 
@@ -552,7 +552,7 @@ const generateParkPopUp = (park) => {
     <p>${park.score}</p>
     <p>${park.snippet}</p>
     <a href="${park.url}" target="_blank">Click to Learn More about ${park.name}</a>
-    <img src="${park.image}" alt="${park.name} image">`;
+    <img src="${park.image}" height="128" width="192" alt="${park.name} image">`;
     return parkTemplate;
 };
 
@@ -563,7 +563,7 @@ const generateRestaurantPopUp = (restaurant) => {
     <p>Score: ${restaurant.score}</p>
     <p>${restaurant.snippet}</p>
     <a href="${restaurant.url}" target="_blank">${restaurant.text}</a>
-    <img src="${restaurant.image}" alt="${restaurant.alt}">`
+    <img src="${restaurant.image}" height="128" width="192" alt="${restaurant.alt}">`
     return restaurantTemplate;
 };
 

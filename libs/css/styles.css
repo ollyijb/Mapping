@@ -28,9 +28,9 @@
 }
 
 #select {
-    z-index: 9999999;
+    z-index: 999;
     position: absolute;
-    left: 12vh;
+    left: 12vw;
     top: 1vw;
     display: inline-block;
     width: auto;
@@ -44,7 +44,7 @@
 }
 
 .infoLabel {
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .answerDisplay {
@@ -75,4 +75,51 @@ ul {
     padding: 0px 0px 5px 10px;
     font-weight: bold;
     font-size: 1.2em;
+}
+
+.blue {
+    color: blue;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+.brown {
+    color: brown;
+}
+
+.pink {
+    color: pink;
+}
+
+table .col1 i {
+    width: 10vw;
+    text-align: center;
+    font-size: 5vh;
+}
+
+table .col2 {
+    width: 25vw;
+}
+
+table .col3 {
+    width: 25vw;
+}
+
+table th {
+    text-align: center;
+}
+
+table th {
+    background-color: blue;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: lightgoldenrodyellow;
 }
