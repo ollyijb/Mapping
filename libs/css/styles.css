@@ -100,15 +100,14 @@ ul {
 table .col1 i {
     max-width: 5vw;
     text-align: center;
-    font-size: 1vw;
 }
 
 table .col2 {
-    width: 25vw;
+    max-width: 25vw;
 }
 
 table .col3 {
-    width: 25vw;
+    max-width: 25vw;
 }
 
 table th {
@@ -124,10 +123,10 @@ tr:nth-child(even) {
     background-color: rgb(235, 235, 190);
 }
 
-.leaflet-bar button {
+/*.leaflet-bar button {
     height: 3vw !important;
     width: 3vw !important;
     font-size: 2vw;
     padding-top: 0.5vh;
-}
+}*/
 
