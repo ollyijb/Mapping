@@ -98,9 +98,9 @@ ul {
 }
 
 table .col1 i {
-    width: 10vw;
+    max-width: 5vw;
     text-align: center;
-    font-size: 2vw;
+    font-size: 1vw;
 }
 
 table .col2 {
@@ -121,13 +121,13 @@ table th {
 }
 
 tr:nth-child(even) {
-    background-color: lightgoldenrodyellow;
+    background-color: rgb(235, 235, 190);
 }
 
 .leaflet-bar button {
-    height: 4vw !important;
-    width: 4vw !important;
-    font-size: 3vw;
-    padding-top: 1vh;
+    height: 3vw !important;
+    width: 3vw !important;
+    font-size: 2vw;
+    padding-top: 0.5vh;
 }
 

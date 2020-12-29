@@ -549,7 +549,7 @@ const generateMarker = (coordsList, iconVar) => {
 const generateParkPopUp = (park) => {
     let parkTemplate = `
     <h4>${park.name}</h4>
-    <p>${park.score}</p>
+    <p>Score: ${park.score}</p>
     <p>${park.snippet}</p>
     <a href="${park.url}" target="_blank">Click to Learn More about ${park.name}</a>
     <img src="${park.image}" height="128" width="192" alt="${park.name} image">`;
