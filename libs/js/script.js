@@ -750,7 +750,8 @@ let keyBtn = L.easyButton('icon ion-key', function () {
 let infoBtn = L.easyButton('icon ion-information', function (btn) {
     let country = countryValidator(dataStore[0]);
     $('#countryName').html(country.name);
-    $('#flag').html(country.flag);
+    //$('#flag').html(country.flag);
+    $('#flag').attr('src', `https://www.countryflags.io/${dataStore[0].GeoInfo.countryCode}/flat/32.png`)
     $('#population').html(country.population);
     $('#capital').html(country.capital);
     $('#callingCode').html(country.callingCode);

@@ -100,7 +100,7 @@ ul {
 table .col1 i {
     width: 10vw;
     text-align: center;
-    font-size: 5vh;
+    font-size: 3vw;
 }
 
 table .col2 {
@@ -123,3 +123,11 @@ table th {
 tr:nth-child(even) {
     background-color: lightgoldenrodyellow;
 }
+
+.leaflet-bar button {
+    height: 5vw !important;
+    width: 5vw !important;
+    font-size: 4vw;
+    padding: 1vw;
+}
+
