@@ -1,5 +1,5 @@
 // Default User Position object
-const defaultPosition = { coords: { latitude: 51.5, longitude: -0.10 } };
+const defaultPosition = { latitude: 51.5, longitude: -0.10 };
 const defaultCountryCode = "GB";
 
 // Used to Store User Location Data
@@ -199,16 +199,16 @@ $(document).ready(function () {
     if (!navigator.geolocation) {
 
         alert(`Geolocation denied or not supported so rendering default map`);
-        getSelectLocationData(defaultCountryCode).then((result) => {
-            setBorders(result);
-            dropCitiesWrapperFunction(result);
-            dropParksWrapper(result);
-            dropRestaurantsWrapper(result);
-            dropAttractionsWrapper(result);
-            dropHotelsWrapper(result);
-            $('#preloader').fadeOut(200);
-            $('#status').fadeOut(200);
-            dataStore.unshift(result);
+        getUserCountryCode(defaultPosition).then((res) => {
+            getSelectLocationData(res.data).then((result) => {
+                setBorders(result);
+                dropCitiesWrapperFunction(result);
+                dropParksWrapper(result);
+                dropRestaurantsWrapper(result);
+                dropAttractionsWrapper(result);
+                dropHotelsWrapper(result);
+                dataStore.unshift(result);
+            });
         }).catch((err) => {
             console.error(err.message);
         });
@@ -231,24 +231,22 @@ $(document).ready(function () {
                     dropRestaurantsWrapper(result);
                     dropAttractionsWrapper(result);
                     dropHotelsWrapper(result);
-                    $('#preloader').fadeOut(200);
-                    $('#status').fadeOut(200);
                     dataStore.unshift(result);
                 });
             });
 
         }).catch((err) => {
             alert(`Geolocation denied or not supported so rendering default map`);
-            getSelectLocationData(defaultCountryCode).then((result) => {
-                setBorders(result);
-                dropCitiesWrapperFunction(result);
-                dropParksWrapper(result);
-                dropRestaurantsWrapper(result);
-                dropAttractionsWrapper(result);
-                dropHotelsWrapper(result);
-                forecastFiller(result);
-                $('#preloader').fadeOut(200);
-                $('#status').fadeOut(200);
+            getUserCountryCode(defaultPosition).then((res) => {
+                getSelectLocationData(res.data).then((result) => {
+                    setBorders(result);
+                    dropCitiesWrapperFunction(result);
+                    dropParksWrapper(result);
+                    dropRestaurantsWrapper(result);
+                    dropAttractionsWrapper(result);
+                    dropHotelsWrapper(result);
+                    dataStore.unshift(result);
+                });
             });
         });
     }
