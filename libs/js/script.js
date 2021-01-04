@@ -191,7 +191,6 @@ $(document).ready(function () {
                 select.append(option);
             }
         }, error: (err) => {
-            console.log(err);
             reject(err);
         }
     });
@@ -215,7 +214,6 @@ $(document).ready(function () {
 
     } else {
         getUserLocation().then((position) => {
-            console.log(position);
             dropUsersLocation(position);
 
             useObj = {
@@ -579,13 +577,11 @@ const getSelectLocationData = (code) => {
                 countryCode: code
             },
             success: function (result) {
-                console.log(result);
                 resolve(result);
                 $('.navbar-collapse').collapse('hide');
                 map.spin(false);
             },
             error: (err) => {
-                console.log(err);
                 reject(err);
             }
         });
@@ -604,11 +600,9 @@ const getUserCountryCode = (coordsObj) => {
                 lng: coordsObj.longitude
             },
             success: function (res) {
-                console.log(res);
                 resolve(res);
             },
             error: (err) => {
-                console.log(err);
                 reject(err);
             }
         });
@@ -703,6 +697,11 @@ const setBorders = (borderObj) => {
 };
 
 /*----------------------------- jQuery Events ----------------------------*/
+
+// Resetting the scrolling on modals after user closes them
+$('.modal').on('hide.bs.modal', function () {
+    $('.modal-body').scrollTop(0);
+});
 
 // User Selects Country and Generates a new map with new markers
 $('#select').change(function () {

@@ -117,3 +117,7 @@ tr:nth-child(even) {
 .card {
     border: none !important;
 }
+
+button, select {
+    font-size: 150%;
+}
